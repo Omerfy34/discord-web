@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WOWSY BOT - Discord Bot</title>
+    <meta name="description" content="Ekonomi, oyunlar, müzik ve AI ile dolu güçlü Discord botu!">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="floating-orb orb-1"></div>
+        <div class="floating-orb orb-2"></div>
+        <div class="floating-orb orb-3"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img id="nav-logo-img" src="assets/images/logo.png" alt="Bot Logo">
+                <span id="nav-bot-name">WOWSY BOT</span>
+            </div>
+            <div class="nav-links">
+                <a href="#hero" class="nav-link active">Ana Sayfa</a>
+                <a href="#commands" class="nav-link">Komutlar</a>
+                <a href="#stats" class="nav-link">İstatistikler</a>
+            </div>
+            <div class="nav-actions">
+                <a href="#" id="invite-btn-nav" class="btn btn-primary btn-glow">
+                    <i class="fas fa-plus"></i> Sunucuya Ekle
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-badge" id="hero-badge">
+                <i class="fas fa-sparkles"></i>
+                <span>⚡ 150+ Komut | v2.0 Yayında!</span>
+            </div>
+            
+            <div class="hero-avatar">
+                <img id="hero-bot-avatar" src="assets/images/logo.png" alt="Bot Avatar">
+                <div class="avatar-ring"></div>
+                <div class="avatar-status"></div>
+            </div>
+            
+            <h1 class="hero-title">
+                <span id="hero-title-text">Sunucunuzu</span>
+                <span class="gradient-text" id="hero-title-highlight">Güçlendirin</span>
+            </h1>
+            
+            <p class="hero-description" id="hero-description">
+                Discord sunucunuz için ihtiyacınız olan tüm özellikleri barındıran güçlü bot.
+                Ekonomi, oyunlar, müzik, moderasyon ve AI ile dolu!
+            </p>
+            
+            <div class="hero-buttons">
+                <a href="#" id="invite-btn-hero" class="btn btn-primary btn-lg btn-glow">
+                    <i class="fas fa-robot"></i> Sunucuna Ekle
+                </a>
+                <a href="#commands" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-terminal"></i> Komutları Gör
+                </a>
+            </div>
+            
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-number" id="stat-servers">0</span>
+                    <span class="hero-stat-label">Sunucu</span>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number" id="stat-users">0</span>
+                    <span class="hero-stat-label">Kullanıcı</span>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">150+</span>
+                    <span class="hero-stat-label">Komut</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commands Section -->
+    <section class="commands" id="commands">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-badge">Komutlar</span>
+                <h2 class="section-title">Bot Komutları</h2>
+                <p class="section-desc">Kategorilere göre tüm komutları keşfedin</p>
+            </div>
+            
+            <!-- Command Category Tabs -->
+            <div class="command-tabs" id="command-tabs">
+                <!-- Firebase'den yüklenecek -->
+            </div>
+
+            <!-- Commands Grid -->
+            <div class="commands-grid" id="commands-grid">
+                <!-- Firebase'den yüklenecek -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section" id="stats">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-badge">İstatistikler</span>
+                <h2 class="section-title">Canlı İstatistikler</h2>
+            </div>
+            <div class="stats-grid" id="stats-grid">
+                <!-- Firebase'den yüklenecek -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Command Detail Modal -->
+    <div class="modal-overlay" id="commandModal">
+        <div class="modal">
+            <button class="modal-close" id="modalClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <div class="modal-icon" id="modalIcon">
+                    <i class="fas fa-terminal"></i>
+                </div>
+                <h3 class="modal-title" id="modalTitle">/komut</h3>
+            </div>
+            <div class="modal-body">
+                <div class="modal-field">
+                    <label>Açıklama</label>
+                    <p id="modalDescription">Komut açıklaması</p>
+                </div>
+                <div class="modal-field">
+                    <label>Kullanım</label>
+                    <code id="modalUsage">/komut [parametre]</code>
+                </div>
+                <div class="modal-field">
+                    <label>Örnek</label>
+                    <code id="modalExample">/komut örnek</code>
+                </div>
+                <div class="modal-field">
+                    <label>Gerekli Yetki</label>
+                    <span class="modal-permission" id="modalPermission">Herkes</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img id="footer-logo" src="assets/images/logo.png" alt="Logo">
+                    <span id="footer-bot-name">WOWSY BOT</span>
+                </div>
+                <p class="footer-text">© 2026 WOWSY BOT - Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    <!-- Local JS -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>

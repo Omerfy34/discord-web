@@ -1,0 +1,580 @@
+{
+  "commands": {
+    "ekonomi": {
+      "name": "Ekonomi",
+      "icon": "fa-coins",
+      "color": "#F1C40F",
+      "order": 1,
+      "commands": {
+        "bakiye": {
+          "name": "bakiye",
+          "shortDesc": "Para görüntüle",
+          "description": "Nakit ve banka bakiyeni gösterir. Başka birinin bakiyesini görmek için kullanıcıyı etiketle.",
+          "usage": "/bakiye [@kullanıcı]",
+          "example": "/bakiye @Wowsy",
+          "permission": "Herkes"
+        },
+        "gunluk": {
+          "name": "günlük",
+          "shortDesc": "24 saatte bir ödül",
+          "description": "24 saatte bir ödül topla! Ardışık gün bonusu var. Her gün %10 jackpot şansı!",
+          "usage": "/günlük",
+          "example": "/günlük",
+          "permission": "Herkes"
+        },
+        "bedava": {
+          "name": "bedava",
+          "shortDesc": "2 saatte bir ödül",
+          "description": "2 saatte bir bedava para kazan. Hızlı para kazanmanın kolay yolu!",
+          "usage": "/bedava",
+          "example": "/bedava",
+          "permission": "Herkes"
+        },
+        "calis": {
+          "name": "çalış",
+          "shortDesc": "30 dakikada bir çalış",
+          "description": "30 dakikada bir çalış ve para kazan! 20 farklı meslek var.",
+          "usage": "/çalış",
+          "example": "/çalış",
+          "permission": "Herkes"
+        },
+        "yatir": {
+          "name": "yatır",
+          "shortDesc": "Bankaya para yatır",
+          "description": "Nakit parayı bankaya yatır. Bankadaki para faiz kazanır ve soygundan korunur.",
+          "usage": "/yatır <miktar/hepsi>",
+          "example": "/yatır 5000",
+          "permission": "Herkes"
+        },
+        "cek": {
+          "name": "çek",
+          "shortDesc": "Bankadan para çek",
+          "description": "Bankadan nakit paraya para çek. Alışveriş yapmak için gerekli.",
+          "usage": "/çek <miktar/hepsi>",
+          "example": "/çek 3000",
+          "permission": "Herkes"
+        },
+        "gonder": {
+          "name": "gönder",
+          "shortDesc": "Para transferi",
+          "description": "Başka bir kullanıcıya nakit para gönder. Min 100💰",
+          "usage": "/gönder @kullanıcı <miktar>",
+          "example": "/gönder @Wowsy 1000",
+          "permission": "Herkes"
+        },
+        "soygun": {
+          "name": "soygun",
+          "shortDesc": "Hırsızlık yap (%25)",
+          "description": "Başka birini soymayı dene! %25 başarı şansı. Başarısız olursan 200-500💰 ceza yer. Koruma Kalkanı soygundan korur. Cooldown: 1 saat",
+          "usage": "/soygun @kullanıcı",
+          "example": "/soygun @Zengin",
+          "permission": "Herkes"
+        },
+        "faiz": {
+          "name": "faiz",
+          "shortDesc": "Faiz topla",
+          "description": "Bankadaki paran %2/6 saat bileşik faiz kazanır. Birikmiş faizi topla! Max tek seferde 50,000💰",
+          "usage": "/faiz",
+          "example": "/faiz",
+          "permission": "Herkes"
+        },
+        "zenginler": {
+          "name": "zenginler",
+          "shortDesc": "Zengin sıralaması",
+          "description": "Sunucudaki en zengin 10 kişiyi ve senin sıranı gösterir.",
+          "usage": "/zenginler",
+          "example": "/zenginler",
+          "permission": "Herkes"
+        },
+        "magaza": {
+          "name": "mağaza",
+          "shortDesc": "Ürün satın al",
+          "description": "Koruma Kalkanı, Kazanç Artırıcı, Jackpot Bileti gibi ürünler satın al!",
+          "usage": "/mağaza",
+          "example": "/mağaza",
+          "permission": "Herkes"
+        },
+        "envanter": {
+          "name": "envanter",
+          "shortDesc": "Eşyalarını gör",
+          "description": "Sahip olduğun eşyaları, rozetleri ve istatistiklerini göster.",
+          "usage": "/envanter [@kullanıcı]",
+          "example": "/envanter",
+          "permission": "Herkes"
+        },
+        "istatistik": {
+          "name": "istatistik",
+          "shortDesc": "Ekonomi istatistiklerin",
+          "description": "Toplam kazanç, kayıp, net kar ve detaylı ekonomi istatistiklerini göster.",
+          "usage": "/istatistik",
+          "example": "/istatistik",
+          "permission": "Herkes"
+        }
+      }
+    },
+    "oyunlar": {
+      "name": "Oyunlar",
+      "icon": "fa-gamepad",
+      "color": "#9B59B6",
+      "order": 2,
+      "commands": {
+        "avlan": {
+          "name": "avlan",
+          "shortDesc": "Hayvan avla (ücretsiz)",
+          "description": "Fare, Tavşan, Geyik, Ayı, Ejderha avla! Nadirlik arttıkça para artar. %10 kritik vuruş şansı (2x). Cooldown: 2dk",
+          "usage": "/avlan",
+          "example": "/avlan",
+          "permission": "Herkes"
+        },
+        "balik": {
+          "name": "balık",
+          "shortDesc": "Balık tut (ücretsiz)",
+          "description": "Karides, Hamsi, Alabalık, Somon, Köpekbalığı, Balina tut! %5 Altın Balık şansı (3x). Cooldown: 3dk",
+          "usage": "/balık",
+          "example": "/balık",
+          "permission": "Herkes"
+        },
+        "maden": {
+          "name": "maden",
+          "shortDesc": "Maden kaz (ücretsiz)",
+          "description": "Taş, Bakır, Demir, Altın, Elmas, Ametist kaz! %8 Damar bulma şansı (2x). Cooldown: 5dk",
+          "usage": "/maden",
+          "example": "/maden",
+          "permission": "Herkes"
+        },
+        "slot": {
+          "name": "slot",
+          "shortDesc": "Slot makinesi",
+          "description": "Slot makinesi! 7️⃣7️⃣7️⃣ = 77x | 💎💎💎 = 50x | 🍒🍒🍒 = 20x | İkili eşleşme: 2-3x",
+          "usage": "/slot <bahis>",
+          "example": "/slot 100",
+          "permission": "Herkes"
+        },
+        "coinflip": {
+          "name": "coinflip",
+          "shortDesc": "Yazı-tura (2x)",
+          "description": "Klasik yazı-tura oyunu. Doğru tahmin edersen 2x kazanırsın!",
+          "usage": "/coinflip <bahis> <yazı/tura>",
+          "example": "/coinflip 500 yazı",
+          "permission": "Herkes"
+        },
+        "zar": {
+          "name": "zar",
+          "shortDesc": "Zar bahis oyunu",
+          "description": "Zar at! 6 atarsan 4x, 5 atarsan 2x, 4 atarsan iade. Altı şansın var!",
+          "usage": "/zar <bahis>",
+          "example": "/zar 200",
+          "permission": "Herkes"
+        },
+        "rulet": {
+          "name": "rulet",
+          "shortDesc": "Rulet oyunu",
+          "description": "Rulet oyunu! 🔴 Kırmızı veya ⚫ Siyah = 2x | 🟢 Yeşil = 14x",
+          "usage": "/rulet <bahis> <kırmızı/siyah/yeşil>",
+          "example": "/rulet 300 kırmızı",
+          "permission": "Herkes"
+        },
+        "blackjack": {
+          "name": "blackjack",
+          "shortDesc": "21 kart oyunu",
+          "description": "Klasik blackjack! 21'e en yakın ol. Çek/Dur butonları ile interaktif oyun. Blackjack: 2.5x",
+          "usage": "/blackjack <bahis>",
+          "example": "/blackjack 500",
+          "permission": "Herkes"
+        },
+        "crash": {
+          "name": "crash",
+          "shortDesc": "Çarpan oyunu",
+          "description": "Çarpan yükselir, patlamadan önce çek! Ne zaman duracağına sen karar ver. Risk/Ödül dengesi!",
+          "usage": "/crash <bahis>",
+          "example": "/crash 1000",
+          "permission": "Herkes"
+        },
+        "battle": {
+          "name": "battle",
+          "shortDesc": "PvP savaş",
+          "description": "Başka biriyle PvP savaş! Can sistemi, kritik vuruşlar. Kazanan hepsini alır!",
+          "usage": "/battle @rakip <bahis>",
+          "example": "/battle @Düşman 500",
+          "permission": "Herkes"
+        },
+        "tkm": {
+          "name": "tkm",
+          "shortDesc": "Taş Kağıt Makas",
+          "description": "Klasik Taş Kağıt Makas oyunu. Kazanırsan 2x!",
+          "usage": "/tkm <bahis> <taş/kağıt/makas>",
+          "example": "/tkm 100 taş",
+          "permission": "Herkes"
+        },
+        "tahmin": {
+          "name": "tahmin",
+          "shortDesc": "Sayı tahmin oyunu",
+          "description": "1-10 arası sayı tahmin et. Tam bilirsen 10x! 1 fark: 2x",
+          "usage": "/tahmin <bahis> <1-10>",
+          "example": "/tahmin 50 7",
+          "permission": "Herkes"
+        },
+        "trivia": {
+          "name": "trivia",
+          "shortDesc": "Bilgi yarışması",
+          "description": "Rastgele bilgi sorusu. Doğru cevaplarsan 3x kazanırsın!",
+          "usage": "/trivia <bahis>",
+          "example": "/trivia 200",
+          "permission": "Herkes"
+        },
+        "hazine": {
+          "name": "hazine",
+          "shortDesc": "Hazine sandığı",
+          "description": "5 kutudan birini seç. Sadece 1 tanesi altın dolu! Bulursan 5x kazanırsın!",
+          "usage": "/hazine <bahis>",
+          "example": "/hazine 100",
+          "permission": "Herkes"
+        },
+        "yaris": {
+          "name": "yarış",
+          "shortDesc": "At yarışı",
+          "description": "At yarışı! 🔴🔵🟢 = 2x | 🟡 = 3x | 🟣 = 5x. Hangi at kazanacak?",
+          "usage": "/yarış <bahis> <at_rengi>",
+          "example": "/yarış 500 kırmızı",
+          "permission": "Herkes"
+        }
+      }
+    },
+    "muzik": {
+      "name": "Müzik",
+      "icon": "fa-music",
+      "color": "#E74C3C",
+      "order": 3,
+      "commands": {
+        "cal": {
+          "name": "çal",
+          "shortDesc": "Müzik çal",
+          "description": "YouTube'dan şarkı ara ve çal. Şarkı adı veya URL ile arama yapabilirsin. Kuyruk sistemli.",
+          "usage": "/çal <şarkı/link>",
+          "example": "/çal Never Gonna Give You Up",
+          "permission": "Herkes"
+        },
+        "katil": {
+          "name": "katıl",
+          "shortDesc": "Ses kanalına katıl",
+          "description": "Botun ses kanalına katılmasını sağla. Müzik çalmadan önce gerekli.",
+          "usage": "/katıl",
+          "example": "/katıl",
+          "permission": "Herkes"
+        },
+        "ayril": {
+          "name": "ayrıl",
+          "shortDesc": "Ses kanalından ayrıl",
+          "description": "Bot ses kanalından ayrılır ve kuyruğu temizler.",
+          "usage": "/ayrıl",
+          "example": "/ayrıl",
+          "permission": "Herkes"
+        },
+        "duraklat": {
+          "name": "duraklat",
+          "shortDesc": "Müziği duraklat",
+          "description": "Çalan müziği duraklat. /devam ile devam ettir.",
+          "usage": "/duraklat",
+          "example": "/duraklat",
+          "permission": "Herkes"
+        },
+        "devam": {
+          "name": "devam",
+          "shortDesc": "Müziği devam ettir",
+          "description": "Duraklatılmış müziği devam ettir.",
+          "usage": "/devam",
+          "example": "/devam",
+          "permission": "Herkes"
+        },
+        "atla": {
+          "name": "atla",
+          "shortDesc": "Şarkıyı atla",
+          "description": "Çalan şarkıyı atla ve kuyruktaki bir sonraki şarkıya geç.",
+          "usage": "/atla",
+          "example": "/atla",
+          "permission": "Herkes"
+        },
+        "durdur": {
+          "name": "durdur",
+          "shortDesc": "Müziği durdur",
+          "description": "Müziği durdur ve tüm kuyruğu temizle. Bot ses kanalında kalır.",
+          "usage": "/durdur",
+          "example": "/durdur",
+          "permission": "Herkes"
+        },
+        "kuyruk": {
+          "name": "kuyruk",
+          "shortDesc": "Kuyruk göster",
+          "description": "Müzik kuyruğundaki tüm şarkıları ve sırasını göster. Sayfa sayfa gösterim.",
+          "usage": "/kuyruk",
+          "example": "/kuyruk",
+          "permission": "Herkes"
+        },
+        "suancalan": {
+          "name": "şuançalan",
+          "shortDesc": "Çalan şarkıyı göster",
+          "description": "Şu anda çalan şarkının bilgilerini ve ilerleme çubuğunu göster.",
+          "usage": "/şuançalan",
+          "example": "/şuançalan",
+          "permission": "Herkes"
+        },
+        "karistir": {
+          "name": "karıştır",
+          "shortDesc": "Kuyruğu karıştır",
+          "description": "Müzik kuyruğundaki şarkıları rastgele sıraya sok.",
+          "usage": "/karıştır",
+          "example": "/karıştır",
+          "permission": "Herkes"
+        },
+        "tekrar": {
+          "name": "tekrar",
+          "shortDesc": "Son şarkıyı tekrarla",
+          "description": "En son çalan şarkıyı tekrar kuyruğa ekle.",
+          "usage": "/tekrar",
+          "example": "/tekrar",
+          "permission": "Herkes"
+        }
+      }
+    },
+    "ai": {
+      "name": "Yapay Zeka",
+      "icon": "fa-brain",
+      "color": "#3498DB",
+      "order": 4,
+      "commands": {
+        "ai": {
+          "name": "ai",
+          "shortDesc": "AI'ya soru sor",
+          "description": "Yapay zekaya her türlü soruyu sor. Genel bilgi, tavsiye, açıklama. Powered by Groq AI (Llama 3.1).",
+          "usage": "/ai <soru>",
+          "example": "/ai Python'da liste nedir?",
+          "permission": "Herkes"
+        },
+        "tercume": {
+          "name": "tercume",
+          "shortDesc": "Metin çevir",
+          "description": "Metni istediğin dile çevir. Tüm diller desteklenir. Hızlı ve doğru çeviri.",
+          "usage": "/tercume <dil> <metin>",
+          "example": "/tercume ingilizce Merhaba dünya",
+          "permission": "Herkes"
+        },
+        "hikaye": {
+          "name": "hikaye",
+          "shortDesc": "Hikaye oluştur",
+          "description": "Verdiğin konuya göre kısa ve yaratıcı bir hikaye yaz. AI tabanlı.",
+          "usage": "/hikaye <konu>",
+          "example": "/hikaye Uzayda kaybolmuş astronot",
+          "permission": "Herkes"
+        },
+        "ozet": {
+          "name": "özet",
+          "shortDesc": "Metin özetle",
+          "description": "Uzun metni kısa ve öz bir şekilde özetle. Hızlıca ana fikirleri çıkar.",
+          "usage": "/özet <metin>",
+          "example": "/özet [uzun metin]",
+          "permission": "Herkes"
+        },
+        "kod": {
+          "name": "kod",
+          "shortDesc": "Kod yaz",
+          "description": "İstediğin programlama dilinde kod yaz. Python, JavaScript, C++, Java vb.",
+          "usage": "/kod <dil> <istek>",
+          "example": "/kod python fibonacci fonksiyonu",
+          "permission": "Herkes"
+        },
+        "siir": {
+          "name": "şiir",
+          "shortDesc": "Şiir yaz",
+          "description": "Verdiğin konuya göre duygusal ve yaratıcı bir şiir oluştur.",
+          "usage": "/şiir <konu>",
+          "example": "/şiir Aşk ve ayrılık",
+          "permission": "Herkes"
+        }
+      }
+    },
+    "finans": {
+      "name": "Haber & Finans",
+      "icon": "fa-newspaper",
+      "color": "#16A085",
+      "order": 5,
+      "commands": {
+        "doviz": {
+          "name": "döviz",
+          "shortDesc": "Döviz kurları",
+          "description": "USD, EUR, GBP, CHF, CAD, RUB, JPY güncel döviz kurlarını göster. Anlık veriler.",
+          "usage": "/döviz",
+          "example": "/döviz",
+          "permission": "Herkes"
+        },
+        "altin": {
+          "name": "altın",
+          "shortDesc": "Altın fiyatları",
+          "description": "Gram, Çeyrek, Yarım, Tam, Cumhuriyet, Gremse altın fiyatlarını göster.",
+          "usage": "/altın",
+          "example": "/altın",
+          "permission": "Herkes"
+        },
+        "kripto": {
+          "name": "kripto",
+          "shortDesc": "Kripto para fiyatları",
+          "description": "Bitcoin, Ethereum, BNB, Ripple, Cardano, Dogecoin güncel fiyatlarını göster.",
+          "usage": "/kripto",
+          "example": "/kripto",
+          "permission": "Herkes"
+        },
+        "haber": {
+          "name": "haber",
+          "shortDesc": "Son haberler",
+          "description": "Genel, ekonomi, teknoloji, spor kategorilerinde son haberleri göster.",
+          "usage": "/haber [kategori]",
+          "example": "/haber teknoloji",
+          "permission": "Herkes"
+        }
+      }
+    },
+    "hatirlatici": {
+      "name": "Hatırlatıcı",
+      "icon": "fa-bell",
+      "color": "#E67E22",
+      "order": 6,
+      "commands": {
+        "hatirlat": {
+          "name": "hatırlat",
+          "shortDesc": "Hatırlatma oluştur",
+          "description": "Belirtilen süre sonra hatırlatma gönderir. Min: 10sn, Max: 1 yıl. Süre formatı: 5m, 1h, 2d vb.",
+          "usage": "/hatırlat <süre> <mesaj>",
+          "example": "/hatırlat 1h Yemeği kontrol et",
+          "permission": "Herkes"
+        },
+        "hatirlat-dm": {
+          "name": "hatırlat-dm",
+          "shortDesc": "DM hatırlatma",
+          "description": "Hatırlatmayı DM olarak gönderir. Özel ve gizli hatırlatmalar için ideal.",
+          "usage": "/hatırlat-dm <süre> <mesaj>",
+          "example": "/hatırlat-dm 30m Toplantı var",
+          "permission": "Herkes"
+        },
+        "hatirlaticilarim": {
+          "name": "hatırlatıcılarım",
+          "shortDesc": "Hatırlatıcılarını gör",
+          "description": "Aktif tüm hatırlatıcılarını ve kalan sürelerini göster.",
+          "usage": "/hatırlatıcılarım",
+          "example": "/hatırlatıcılarım",
+          "permission": "Herkes"
+        }
+      }
+    },
+    "eglence": {
+      "name": "Eğlence",
+      "icon": "fa-face-laugh",
+      "color": "#E91E63",
+      "order": 7,
+      "commands": {
+        "avatar": {
+          "name": "avatar",
+          "shortDesc": "Profil resmi göster",
+          "description": "Profil resmini büyük boyutta göster. Kendinin veya başkasının.",
+          "usage": "/avatar [@kullanıcı]",
+          "example": "/avatar @Wowsy",
+          "permission": "Herkes"
+        },
+        "saka": {
+          "name": "şaka",
+          "shortDesc": "Rastgele şaka",
+          "description": "Rastgele programcı şakası gösterir. Güldürmeyi garanti edemeyiz 😄",
+          "usage": "/şaka",
+          "example": "/şaka",
+          "permission": "Herkes"
+        },
+        "8ball": {
+          "name": "8ball",
+          "shortDesc": "Sihirli küre",
+          "description": "Sihirli küreye sor, rastgele cevap alsın. Evet/Hayır/Belki cevapları.",
+          "usage": "/8ball <soru>",
+          "example": "/8ball Bugün şanslı mıyım?",
+          "permission": "Herkes"
+        },
+        "askmetre": {
+          "name": "aşkmetre",
+          "shortDesc": "Aşk ölçümü 💕",
+          "description": "İki kişi arasındaki aşk oranını %0-100 arası ölç. Tamamen eğlence amaçlı!",
+          "usage": "/aşkmetre @kişi1 @kişi2",
+          "example": "/aşkmetre @Ali @Ayşe",
+          "permission": "Herkes"
+        },
+        "kaccm": {
+          "name": "kaçcm",
+          "shortDesc": "Boy ölçümü 📏",
+          "description": "Rastgele boy ölçümü (5-30cm). %100 şaka amaçlı, kırılmayın 😏",
+          "usage": "/kaçcm [@kullanıcı]",
+          "example": "/kaçcm",
+          "permission": "Herkes (18+)"
+        },
+        "gaytest": {
+          "name": "gaytest",
+          "shortDesc": "Gay testi 🏳️‍🌈",
+          "description": "Rastgele gay oranı %0-100. Tamamen şaka, gerçek değil!",
+          "usage": "/gaytest [@kullanıcı]",
+          "example": "/gaytest",
+          "permission": "Herkes (18+)"
+        },
+        "iqtest": {
+          "name": "iqtest",
+          "shortDesc": "IQ testi 🧠",
+          "description": "Rastgele IQ puanı (50-200). Einstein'dan az değilsindir... belki 🤓",
+          "usage": "/iqtest [@kullanıcı]",
+          "example": "/iqtest",
+          "permission": "Herkes"
+        }
+      }
+    },
+    "bilgi": {
+      "name": "Bilgi & Sayaçlar",
+      "icon": "fa-info-circle",
+      "color": "#3498DB",
+      "order": 8,
+      "commands": {
+        "ping": {
+          "name": "ping",
+          "shortDesc": "Bot gecikmesi",
+          "description": "Botun ping (gecikme) süresini ms cinsinden gösterir.",
+          "usage": "/ping",
+          "example": "/ping",
+          "permission": "Herkes"
+        },
+        "sunucu": {
+          "name": "sunucu",
+          "shortDesc": "Sunucu bilgisi",
+          "description": "Sunucu hakkında detaylı bilgi: Üye sayısı, roller, kanallar, oluşturulma tarihi vb.",
+          "usage": "/sunucu",
+          "example": "/sunucu",
+          "permission": "Herkes"
+        },
+        "kullanici": {
+          "name": "kullanıcı",
+          "shortDesc": "Kullanıcı bilgisi",
+          "description": "Bir kullanıcı hakkında detaylı bilgi: Hesap oluşturma, sunucuya katılma, roller vb.",
+          "usage": "/kullanıcı [@kullanıcı]",
+          "example": "/kullanıcı @Wowsy",
+          "permission": "Herkes"
+        },
+        "botbilgi": {
+          "name": "botbilgi",
+          "shortDesc": "Bot hakkında",
+          "description": "Bot hakkında detaylı bilgi: Toplam sunucu, kullanıcı, uptime, versiyon vb.",
+          "usage": "/botbilgi",
+          "example": "/botbilgi",
+          "permission": "Herkes"
+        },
+        "yks": {
+          "name": "yks",
+          "shortDesc": "YKS sayacı",
+          "description": "TYT, AYT, YDT sınavlarına kalan süreyi gün/saat/dakika olarak göster.",
+          "usage": "/yks [TYT/AYT/YDT]",
+          "example": "/yks TYT",
+          "permission": "Herkes"
+        }
+      }
+    }
+  }
+}

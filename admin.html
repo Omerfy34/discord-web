@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli - WOWSY BOT</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Ek Admin Stilleri */
+        .setting-description {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+        .setting-card label {
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+        .preview-info {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 5px;
+            text-align: center;
+        }
+        .command-category {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .category-header:hover {
+            background: rgba(255,255,255,0.03);
+        }
+        .category-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .category-name {
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .category-count {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--bg-input);
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+        .category-toggle {
+            color: var(--text-muted);
+            transition: transform 0.3s;
+        }
+        .category-header.open .category-toggle {
+            transform: rotate(180deg);
+        }
+        .category-commands {
+            display: none;
+            padding: 0 20px 20px;
+        }
+        .category-commands.open {
+            display: block;
+        }
+        .command-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .command-item:hover {
+            border-color: var(--blurple);
+        }
+        .command-name {
+            font-weight: 600;
+            color: var(--blurple);
+            font-family: monospace;
+        }
+        .command-short {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-left: 10px;
+        }
+        .command-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-icon:hover {
+            background: var(--blurple);
+            color: white;
+        }
+        .btn-icon.delete:hover {
+            background: var(--red);
+        }
+        .add-command-btn {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .add-command-btn:hover {
+            border-color: var(--blurple);
+            color: var(--blurple);
+        }
+        .edit-form {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+        .edit-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .edit-form-row.full {
+            grid-template-columns: 1fr;
+        }
+        .edit-form label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            display: block;
+        }
+        .edit-form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+        .add-category-btn {
+            margin-bottom: 20px;
+        }
+        /* Modal */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+        .modal-backdrop.active {
+            display: flex;
+        }
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .help-text {
+            background: rgba(88, 101, 242, 0.1);
+            border: 1px solid rgba(88, 101, 242, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .help-text i {
+            color: var(--blurple);
+            margin-right: 8px;
+        }
+        
+        /* Category Header Actions */
+        .category-header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .category-actions {
+            display: flex;
+            gap: 5px;
+        }
+        .category-actions .btn-icon {
+            width: 28px;
+            height: 28px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body class="admin-body">
+
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h2>🔐 Yönetici Girişi</h2>
+                <p style="color: #72767D; font-size: 14px;">WOWSY Bot yönetim paneli</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> E-posta</label>
+                    <input type="email" id="loginEmail" class="admin-input" placeholder="admin@wowsy.bot" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Şifre</label>
+                    <input type="password" id="loginPassword" class="admin-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Giriş Yap
+                </button>
+                <p class="login-error" id="loginError"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-dashboard" id="adminDashboard" style="display: none;">
+        
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <img id="sidebar-logo" src="assets/images/logo.png" alt="Logo">
+                <span>Admin Panel</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-link active" data-panel="homepage">
+                    <i class="fas fa-home"></i>
+                    <span>Ana Sayfa</span>
+                </a>
+                <a href="#" class="sidebar-link" data-panel="commands">
+                    <i class="fas fa-terminal"></i>
+                    <span>Komutlar</span>
+                </a>
+                <a href="#" class="sidebar-link" data-panel="stats">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>İstatistikler</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="index.html" class="btn btn-ghost btn-block" style="margin-bottom: 10px;">
+                    <i class="fas fa-external-link-alt"></i> Siteyi Görüntüle
+                </a>
+                <button class="btn btn-ghost btn-block" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            
+            <!-- Top Bar -->
+            <header class="admin-topbar">
+                <div class="topbar-info">
+                    <h1 class="topbar-title" id="panelTitle">Ana Sayfa Ayarları</h1>
+                </div>
+                <div class="topbar-actions">
+                    <div class="bot-status" id="botStatus">
+                        <span class="status-dot"></span>
+                        <span>Yükleniyor...</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="admin-content">
+                
+                <!-- ==================== HOMEPAGE PANEL ==================== -->
+                <div class="panel active" id="homepage">
+                    <div class="section-card">
+                        <h2><i class="fas fa-home"></i> Ana Sayfa Ayarları</h2>
+                        
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i>
+                            Burada yaptığın değişiklikler ana sayfaya (index.html) <strong>anlık olarak</strong> yansır.
+                            Değişiklik yaptıktan sonra ana sayfayı yenilemen yeterli!
+                        </div>
+                        
+                        <div class="settings-grid">
+                            
+                            <!-- Bot Name -->
+                            <div class="setting-card">
+                                <label>🤖 Bot Adı</label>
+                                <input type="text" id="botName" class="admin-input" placeholder="WOWSY BOT">
+                                <p class="setting-description">
+                                    📍 <strong>Nerede görünür:</strong> Navbar'da sol üstte ve footer'da
+                                </p>
+                            </div>
+
+                            <!-- Logo URL -->
+                            <div class="setting-card">
+                                <label>🖼️ Logo / Avatar URL</label>
+                                <input type="text" id="logoUrl" class="admin-input" placeholder="https://...">
+                                <div class="preview-box" id="logoPreview" style="display:none;">
+                                    <img id="logoPreviewImg" src="" alt="Logo">
+                                    <p class="preview-info">Önizleme</p>
+                                </div>
+                                <p class="setting-description">
+                                    📍 <strong>Nerede görünür:</strong> Navbar, Hero bölümü ve Footer'da bot logosu
+                                </p>
+                            </div>
+
+                            <!-- Banner URL -->
+                            <div class="setting-card">
+                                <label>🎨 Banner Görseli URL</label>
+                                <input type="text" id="bannerUrl" class="admin-input" placeholder="https://...">
+                                <div class="preview-box banner-preview" id="bannerPreview" style="display:none;">
+                                    <img id="bannerPreviewImg" src="" alt="Banner">
+                                    <p class="preview-info">Önizleme</p>
+                                </div>
+                                <p class="setting-description">
+                                    📍 <strong>Nerede görünür:</strong> Ana sayfada Hero bölümünün altında büyük görsel
+                                </p>
+                            </div>
+
+                            <!-- Invite Link -->
+                            <div class="setting-card">
+                                <label>🔗 Bot Davet Linki</label>
+                                <input type="text" id="inviteLink" class="admin-input" placeholder="https://discord.com/oauth2/authorize?client_id=...">
+                                <p class="setting-description">
+                                    📍 <strong>Nerede görünür:</strong> "Sunucuya Ekle" butonlarında (Navbar ve Hero)
+                                    <br>💡 <strong>Nasıl alınır:</strong> Discord Developer Portal → OAuth2 → URL Generator
+                                </p>
+                            </div>
+
+                            <!-- Hero Title -->
+                            <div class="setting-card">
+                                <label>💬 Ana Başlık (Hero)</label>
+                                <input type="text" id="heroTitle" class="admin-input" placeholder="Sunucunuzu">
+                                <p class="setting-description">
+                                    📍 <strong>Nerede görünür:</strong> Ana sayfada büyük başlığın ilk satırı
+                                    <br>📝 <strong>Örnek:</strong> "Sunucunuzu" (altında renkli kısım gelir)
+                                </p>
+                            </div>
+
+                            <!-- Hero Highlight -->
+                            <div class="setting-card">
+                                <label>✨ Renkli Vurgu Yazısı</label>
+                                <input type="text" id="heroHighlight" class="admin-input" placeholder="Güçlendirin">
+                                <p class="setting-description">
+                                    📍 <strong>Nerede görünür:</strong> Ana başlığın altında gradient renkli yazı
+                                    <br>📝 <strong>Örnek:</strong> "Güçlendirin" (renkli gradient efektli)
+                                </p>
+                            </div>
+
+                            <!-- Hero Description -->
+                            <div class="setting-card full-width">
+                                <label>📝 Açıklama Metni</label>
+                                <textarea id="heroDescription" class="admin-input admin-textarea" placeholder="Discord sunucunuz için ihtiyacınız olan tüm özellikleri barındıran güçlü bot..."></textarea>
+                                <p class="setting-description">
+                                    📍 <strong>Nerede görünür:</strong> Ana başlığın altında açıklama paragrafı
+                                </p>
+                            </div>
+
+                            <!-- Badge Text -->
+                            <div class="setting-card">
+                                <label>🏷️ Rozet Metni (Badge)</label>
+                                <input type="text" id="badgeText" class="admin-input" placeholder="⚡ 150+ Komut | v2.0 Yayında!">
+                                <p class="setting-description">
+                                    📍 <strong>Nerede görünür:</strong> Hero'nun en üstünde küçük etiket
+                                    <br>📝 <strong>Örnek:</strong> "⚡ Yeni özellikler eklendi!"
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <!-- Hepsini Kaydet Butonu -->
+                        <button class="btn btn-primary btn-lg" style="margin-top: 30px; width: 100%;" onclick="saveHomepageData()">
+                            <i class="fas fa-save"></i> Tüm Ana Sayfa Ayarlarını Kaydet
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ==================== COMMANDS PANEL ==================== -->
+                <div class="panel" id="commands">
+                    <div class="section-card">
+                        <h2><i class="fas fa-terminal"></i> Komut Yönetimi</h2>
+                        
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i>
+                            Kategori başlığına tıklayarak komutları görebilirsin.
+                            Her komutun yanındaki <strong>düzenle</strong> butonuyla değişiklik yapabilirsin.
+                        </div>
+                        
+                        <button class="btn btn-primary add-category-btn" onclick="showAddCategoryModal()">
+                            <i class="fas fa-plus"></i> Yeni Kategori Ekle
+                        </button>
+                        
+                        <div id="commandsList">
+                            <p style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                <i class="fas fa-spinner fa-spin"></i> Yükleniyor...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== STATS PANEL ==================== -->
+                <div class="panel" id="stats">
+                    <div class="section-card">
+                        <h2><i class="fas fa-chart-bar"></i> Bot İstatistikleri (Canlı)</h2>
+                        
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i>
+                            Bu veriler <strong>Discord botundan</strong> Firebase'e gönderiliyor.
+                            Bot çalışırken veriler otomatik güncellenir.
+                        </div>
+                        
+                        <div class="stats-dashboard" id="statsDisplay">
+                            <div class="stat-card-admin">
+                                <div class="stat-icon" style="background: rgba(87, 242, 135, 0.2); color: #57F287;">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="adminTotalServers">0</span>
+                                    <span class="stat-label">Toplam Sunucu</span>
+                                </div>
+                            </div>
+                            <div class="stat-card-admin">
+                                <div class="stat-icon" style="background: rgba(88, 101, 242, 0.2); color: #5865F2;">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="adminTotalUsers">0</span>
+                                    <span class="stat-label">Toplam Kullanıcı</span>
+                                </div>
+                            </div>
+                            <div class="stat-card-admin">
+                                <div class="stat-icon" style="background: rgba(254, 231, 92, 0.2); color: #FEE75C;">
+                                    <i class="fas fa-music"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="adminActivePlayers">0</span>
+                                    <span class="stat-label">Aktif Müzik</span>
+                                </div>
+                            </div>
+                            <div class="stat-card-admin">
+                                <div class="stat-icon" style="background: rgba(235, 69, 158, 0.2); color: #EB459E;">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="adminUptime">0s</span>
+                                    <span class="stat-label">Çalışma Süresi</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p style="text-align: center; color: var(--text-muted); margin-top: 20px; font-size: 13px;">
+                            📡 Son güncelleme: <span id="lastUpdate">-</span>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== CATEGORY MODAL (Gelişmiş) ==================== -->
+    <div class="modal-backdrop" id="categoryModal">
+        <div class="modal-box">
+            <h3 class="modal-title" id="categoryModalTitle"><i class="fas fa-folder-plus"></i> Yeni Kategori Ekle</h3>
+            <input type="hidden" id="editingCategoryKey">
+            
+            <div class="form-group">
+                <label>📁 Kategori Adı</label>
+                <input type="text" id="newCategoryName" class="admin-input" placeholder="Örn: Moderasyon, Müzik, Eğlence">
+                <p class="setting-description">Ana sayfada sekme olarak görünecek</p>
+            </div>
+            
+            <div class="form-group">
+                <label>🎨 İkon</label>
+                <input type="text" id="newCategoryIcon" class="admin-input" placeholder="fa-shield-alt" value="fa-terminal">
+                <p class="setting-description">
+                    <a href="https://fontawesome.com/v5/search?m=free" target="_blank" style="color: var(--blurple);">
+                        Font Awesome ikonları →
+                    </a> (örn: fa-music, fa-gamepad, fa-cog)
+                </p>
+            </div>
+            
+            <div class="form-group">
+                <label>🌈 Renk</label>
+                <input type="color" id="newCategoryColor" value="#5865F2" style="width: 100%; height: 50px; border: none; border-radius: 8px; cursor: pointer;">
+            </div>
+            
+            <div class="edit-form-actions">
+                <button class="btn btn-ghost" onclick="closeCategoryModal()">
+                    <i class="fas fa-times"></i> İptal
+                </button>
+                <button class="btn btn-primary" onclick="saveCategory()">
+                    <i class="fas fa-save"></i> Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== COMMAND MODAL (Gelişmiş) ==================== -->
+    <div class="modal-backdrop" id="commandModal">
+        <div class="modal-box">
+            <h3 class="modal-title" id="commandModalTitle"><i class="fas fa-terminal"></i> Komut Ekle</h3>
+            <input type="hidden" id="editCategoryKey">
+            <input type="hidden" id="editCommandKey">
+            
+            <div class="edit-form-row">
+                <div class="form-group">
+                    <label>📝 Komut Adı</label>
+                    <input type="text" id="cmdName" class="admin-input" placeholder="Örn: ban, kick, play">
+                    <p class="setting-description">Slash komut ismi (/ olmadan)</p>
+                </div>
+                <div class="form-group">
+                    <label>📋 Kısa Açıklama</label>
+                    <input type="text" id="cmdShortDesc" class="admin-input" placeholder="Örn: Kullanıcı yasakla">
+                    <p class="setting-description">Komut listesinde görünen kısa metin</p>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>📖 Detaylı Açıklama</label>
+                <textarea id="cmdDescription" class="admin-input admin-textarea" placeholder="Komutun tam açıklaması..."></textarea>
+                <p class="setting-description">Komuta tıklandığında açılan popup'ta görünür</p>
+            </div>
+            
+            <div class="edit-form-row">
+                <div class="form-group">
+                    <label>⌨️ Kullanım</label>
+                    <input type="text" id="cmdUsage" class="admin-input" placeholder="/ban @kullanıcı [sebep]">
+                    <p class="setting-description">Komut nasıl yazılır</p>
+                </div>
+                <div class="form-group">
+                    <label>💡 Örnek</label>
+                    <input type="text" id="cmdExample" class="admin-input" placeholder="/ban @Trol Spam yapıyor">
+                    <p class="setting-description">Gerçek kullanım örneği</p>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>🔒 Gerekli Yetki</label>
+                <select id="cmdPermission" class="admin-input">
+                    <option value="Herkes">Herkes</option>
+                    <option value="Moderatör">Moderatör</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Sunucu Sahibi">Sunucu Sahibi</option>
+                    <option value="Bot Sahibi">Bot Sahibi</option>
+                </select>
+            </div>
+            
+            <div class="edit-form-actions">
+                <button class="btn btn-ghost" onclick="closeCommandModal()">
+                    <i class="fas fa-times"></i> İptal
+                </button>
+                <button class="btn btn-primary" onclick="saveCommand()">
+                    <i class="fas fa-save"></i> Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/admin.js"></script>
+
+</body>
+</html>
