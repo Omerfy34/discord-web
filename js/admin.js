@@ -1,8 +1,8 @@
 // ========================================
-// ADMIN.JS - Yönetici Paneli (FULL v3 - FIXED)
+// ADMIN.JS - Yönetici Paneli (FIRESTORE)
 // ========================================
 
-console.log('🎛️ Admin.js yükleniyor...');
+console.log('🎛️ Admin.js yükleniyor (Firestore)...');
 
 // ===== GLOBAL DEĞİŞKENLER =====
 let allCommands = {};
@@ -89,10 +89,10 @@ function loadAllData() {
     loadCommands();
 }
 
-// ===== LOAD HOMEPAGE DATA =====
+// ===== LOAD HOMEPAGE DATA (FIRESTORE) =====
 function loadHomepageData() {
-    homepageRef.on('value', (snapshot) => {
-        const data = snapshot.val() || {};
+    db.collection('settings').doc('homepage').onSnapshot((doc) => {
+        const data = doc.exists ? doc.data() : {};
         
         document.getElementById('botName').value = data.botName || '';
         document.getElementById('logoUrl').value = data.logoUrl || '';
@@ -109,19 +109,19 @@ function loadHomepageData() {
 }
 
 function updatePreview(inputId, previewId, imgId) {
-    const url = document.getElementById(inputId).value;
+    const url = document.getElementById(inputId)?.value;
     const preview = document.getElementById(previewId);
     const img = document.getElementById(imgId);
     
-    if (url) {
+    if (url && preview && img) {
         preview.style.display = 'block';
         img.src = url;
-    } else {
+    } else if (preview) {
         preview.style.display = 'none';
     }
 }
 
-// ===== SAVE HOMEPAGE DATA =====
+// ===== SAVE HOMEPAGE DATA (FIRESTORE) =====
 window.saveHomepageData = async function() {
     const data = {
         botName: document.getElementById('botName').value,
@@ -131,26 +131,30 @@ window.saveHomepageData = async function() {
         heroTitle: document.getElementById('heroTitle').value,
         heroHighlight: document.getElementById('heroHighlight').value,
         heroDescription: document.getElementById('heroDescription').value,
-        badgeText: document.getElementById('badgeText').value
+        badgeText: document.getElementById('badgeText').value,
+        lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
     };
     
     try {
-        await homepageRef.set(data);
+        await db.collection('settings').doc('homepage').set(data, { merge: true });
         showToast('✅ Kaydedildi! Ana sayfayı yenile.', 'success');
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
     }
 }
 
-// ===== LOAD BOT STATUS =====
+// ===== LOAD BOT STATUS (FIRESTORE) =====
 function loadBotStatus() {
-    db.ref('botStatus').on('value', (snapshot) => {
-        const status = snapshot.val();
+    db.collection('bot_stats').doc('general').onSnapshot((doc) => {
+        const status = doc.exists ? doc.data() : {};
         const statusEl = document.getElementById('botStatus');
+        
+        if (!statusEl) return;
+        
         const dot = statusEl.querySelector('.status-dot');
         const text = statusEl.querySelector('span:last-child');
         
-        if (status && status.online) {
+        if (status && status.uptime === 'online') {
             dot.className = 'status-dot online';
             text.textContent = 'Bot Çevrimiçi';
             statusEl.style.background = 'rgba(87, 242, 135, 0.1)';
@@ -164,35 +168,42 @@ function loadBotStatus() {
     });
 }
 
-// ===== LOAD STATS =====
+// ===== LOAD STATS (FIRESTORE) =====
 function loadStats() {
-    statsRef.on('value', (snapshot) => {
-        const data = snapshot.val() || {};
+    db.collection('bot_stats').doc('general').onSnapshot((doc) => {
+        const data = doc.exists ? doc.data() : {};
         
-        document.getElementById('adminTotalServers').textContent = data.totalServers || 0;
-        document.getElementById('adminTotalUsers').textContent = data.totalUsers || 0;
-        document.getElementById('adminActivePlayers').textContent = data.activePlayers || 0;
-        document.getElementById('adminUptime').textContent = data.uptime || '0s';
+        const servers = document.getElementById('adminTotalServers');
+        const users = document.getElementById('adminTotalUsers');
+        const players = document.getElementById('adminActivePlayers');
+        const uptime = document.getElementById('adminUptime');
+        const lastUpdate = document.getElementById('lastUpdate');
         
-        if (data.lastUpdate) {
-            const date = new Date(data.lastUpdate);
-            document.getElementById('lastUpdate').textContent = date.toLocaleString('tr-TR');
+        if (servers) servers.textContent = data.server_count || 0;
+        if (users) users.textContent = data.user_count || 0;
+        if (players) players.textContent = data.command_count || 0;
+        if (uptime) uptime.textContent = data.uptime || 'offline';
+        
+        if (data.last_update && lastUpdate) {
+            const date = new Date(data.last_update);
+            lastUpdate.textContent = date.toLocaleString('tr-TR');
         }
     });
 }
 
 // ========================================
-// KOMUT YÖNETİMİ
+// KOMUT YÖNETİMİ (FIRESTORE)
 // ========================================
 
 function loadCommands() {
     console.log('🎮 Komutlar yükleniyor...');
     
-    commandsRef.on('value', (snapshot) => {
-        const commands = snapshot.val();
+    db.collection('commands').orderBy('order', 'asc').onSnapshot((snapshot) => {
         const container = document.getElementById('commandsList');
         
-        if (!commands) {
+        if (!container) return;
+        
+        if (snapshot.empty) {
             container.innerHTML = `
                 <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
                     <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
@@ -200,18 +211,21 @@ function loadCommands() {
                     <p style="font-size: 13px;">Yukarıdaki "Yeni Kategori Ekle" butonuna tıklayarak başla!</p>
                 </div>
             `;
+            allCommands = {};
             return;
         }
         
-        allCommands = commands;
+        allCommands = {};
         container.innerHTML = '';
         
-        // Kategorileri sırala
-        const sortedCategories = Object.entries(commands).sort((a, b) => {
-            return (a[1].order || 0) - (b[1].order || 0);
-        });
+        let index = 0;
+        const totalDocs = snapshot.size;
         
-        sortedCategories.forEach(([catKey, category], index) => {
+        snapshot.forEach((doc) => {
+            const catKey = doc.id;
+            const category = doc.data();
+            allCommands[catKey] = category;
+            
             const cmdCount = Object.keys(category.commands || {}).length;
             const bgColor = category.color ? hexToRgba(category.color, 0.2) : 'rgba(88, 101, 242, 0.2)';
             const iconColor = category.color || '#5865F2';
@@ -235,7 +249,7 @@ function loadCommands() {
                         <button class="btn-icon" onclick="moveCategoryUp('${catKey}')" title="Yukarı Taşı" ${index === 0 ? 'disabled style="opacity:0.3"' : ''}>
                             <i class="fas fa-arrow-up"></i>
                         </button>
-                        <button class="btn-icon" onclick="moveCategoryDown('${catKey}')" title="Aşağı Taşı" ${index === sortedCategories.length - 1 ? 'disabled style="opacity:0.3"' : ''}>
+                        <button class="btn-icon" onclick="moveCategoryDown('${catKey}')" title="Aşağı Taşı" ${index === totalDocs - 1 ? 'disabled style="opacity:0.3"' : ''}>
                             <i class="fas fa-arrow-down"></i>
                         </button>
                         <button class="btn-icon" onclick="editCategory('${catKey}')" title="Kategoriyi Düzenle">
@@ -251,7 +265,7 @@ function loadCommands() {
                 </div>
                 <div class="category-commands ${isOpen ? 'open' : ''}" id="cat-${catKey}">
                     <div class="commands-list">
-                        ${renderCommands(catKey, category.commands || {})}
+                        ${renderCommandsList(catKey, category.commands || {})}
                     </div>
                     <button class="add-command-btn" onclick="showCommandModal('${catKey}')">
                         <i class="fas fa-plus"></i> Yeni Komut Ekle
@@ -260,11 +274,14 @@ function loadCommands() {
             `;
             
             container.appendChild(catDiv);
+            index++;
         });
+        
+        console.log('✅ Komutlar yüklendi:', Object.keys(allCommands).length, 'kategori');
     });
 }
 
-function renderCommands(catKey, commands) {
+function renderCommandsList(catKey, commands) {
     if (!commands || Object.keys(commands).length === 0) {
         return '<p class="no-commands">Bu kategoride henüz komut yok.</p>';
     }
@@ -297,6 +314,8 @@ window.toggleCategory = function(catKey) {
     const content = document.getElementById(`cat-${catKey}`);
     const header = document.querySelector(`[data-cat="${catKey}"]`);
     
+    if (!content || !header) return;
+    
     if (content.classList.contains('open')) {
         content.classList.remove('open');
         header.classList.remove('open');
@@ -310,20 +329,21 @@ window.toggleCategory = function(catKey) {
     }
 }
 
-// ===== MOVE CATEGORY =====
+// ===== MOVE CATEGORY (FIRESTORE) =====
 window.moveCategoryUp = async function(catKey) {
-    const categories = Object.entries(allCommands).sort((a, b) => (a[1].order || 0) - (b[1].order || 0));
-    const index = categories.findIndex(([key]) => key === catKey);
+    const keys = Object.keys(allCommands);
+    const sorted = keys.sort((a, b) => (allCommands[a].order || 0) - (allCommands[b].order || 0));
+    const index = sorted.indexOf(catKey);
     
     if (index <= 0) return;
     
     try {
-        const prevKey = categories[index - 1][0];
+        const prevKey = sorted[index - 1];
         const currentOrder = allCommands[catKey].order || index;
         const prevOrder = allCommands[prevKey].order || index - 1;
         
-        await commandsRef.child(`${catKey}/order`).set(prevOrder);
-        await commandsRef.child(`${prevKey}/order`).set(currentOrder);
+        await db.collection('commands').doc(catKey).update({ order: prevOrder });
+        await db.collection('commands').doc(prevKey).update({ order: currentOrder });
         
         showToast('✅ Kategori yukarı taşındı!', 'success');
     } catch (error) {
@@ -332,18 +352,19 @@ window.moveCategoryUp = async function(catKey) {
 }
 
 window.moveCategoryDown = async function(catKey) {
-    const categories = Object.entries(allCommands).sort((a, b) => (a[1].order || 0) - (b[1].order || 0));
-    const index = categories.findIndex(([key]) => key === catKey);
+    const keys = Object.keys(allCommands);
+    const sorted = keys.sort((a, b) => (allCommands[a].order || 0) - (allCommands[b].order || 0));
+    const index = sorted.indexOf(catKey);
     
-    if (index >= categories.length - 1) return;
+    if (index >= sorted.length - 1) return;
     
     try {
-        const nextKey = categories[index + 1][0];
+        const nextKey = sorted[index + 1];
         const currentOrder = allCommands[catKey].order || index;
         const nextOrder = allCommands[nextKey].order || index + 1;
         
-        await commandsRef.child(`${catKey}/order`).set(nextOrder);
-        await commandsRef.child(`${nextKey}/order`).set(currentOrder);
+        await db.collection('commands').doc(catKey).update({ order: nextOrder });
+        await db.collection('commands').doc(nextKey).update({ order: currentOrder });
         
         showToast('✅ Kategori aşağı taşındı!', 'success');
     } catch (error) {
@@ -352,10 +373,9 @@ window.moveCategoryDown = async function(catKey) {
 }
 
 // ========================================
-// ✅ KATEGORİ MODAL - DÜZELTİLDİ
+// KATEGORİ MODAL (FIRESTORE)
 // ========================================
 
-// 🔥 BU FONKSİYON EKSİKTİ - HTML'den çağrılıyor
 window.showAddCategoryModal = function() {
     console.log('📂 Yeni kategori modal açılıyor...');
     showCategoryModal(null);
@@ -378,20 +398,17 @@ window.showCategoryModal = function(editKey = null) {
     }
     
     if (editKey && allCommands[editKey]) {
-        // Düzenleme modu
         title.innerHTML = '<i class="fas fa-edit"></i> Kategori Düzenle';
         document.getElementById('newCategoryName').value = allCommands[editKey].name || '';
         document.getElementById('newCategoryIcon').value = allCommands[editKey].icon || 'fa-terminal';
         document.getElementById('newCategoryColor').value = allCommands[editKey].color || '#5865F2';
     } else {
-        // Yeni ekleme modu
         title.innerHTML = '<i class="fas fa-folder-plus"></i> Yeni Kategori Ekle';
         document.getElementById('newCategoryName').value = '';
         document.getElementById('newCategoryIcon').value = 'fa-terminal';
         document.getElementById('newCategoryColor').value = '#5865F2';
     }
     
-    // İlk inputa odaklan
     setTimeout(() => {
         document.getElementById('newCategoryName').focus();
     }, 100);
@@ -424,7 +441,7 @@ window.saveCategory = async function() {
     try {
         if (editKey) {
             // Düzenleme
-            await commandsRef.child(editKey).update({
+            await db.collection('commands').doc(editKey).update({
                 name: name,
                 icon: icon,
                 color: color
@@ -437,7 +454,6 @@ window.saveCategory = async function() {
                 .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
                 .replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
             
-            // Aynı key var mı kontrol et
             if (allCommands[catKey]) {
                 showToast('❌ Bu isimde kategori zaten var!', 'error');
                 return;
@@ -445,7 +461,7 @@ window.saveCategory = async function() {
             
             const maxOrder = Object.values(allCommands || {}).reduce((max, cat) => Math.max(max, cat.order || 0), 0);
             
-            await commandsRef.child(catKey).set({
+            await db.collection('commands').doc(catKey).set({
                 name: name,
                 icon: icon,
                 color: color,
@@ -473,7 +489,7 @@ window.deleteCategory = async function(catKey) {
     if (!confirm(confirmMsg)) return;
     
     try {
-        await commandsRef.child(catKey).remove();
+        await db.collection('commands').doc(catKey).delete();
         showToast('✅ Kategori silindi!', 'success');
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
@@ -481,7 +497,7 @@ window.deleteCategory = async function(catKey) {
 }
 
 // ========================================
-// ✅ KOMUT MODAL - DÜZELTİLDİ
+// KOMUT MODAL (FIRESTORE)
 // ========================================
 
 window.showCommandModal = function(catKey, cmdKey = null) {
@@ -516,7 +532,6 @@ window.showCommandModal = function(catKey, cmdKey = null) {
         document.getElementById('cmdPermission').value = 'Herkes';
     }
     
-    // İlk inputa odaklan
     setTimeout(() => {
         document.getElementById('cmdName').focus();
     }, 100);
@@ -570,17 +585,25 @@ window.saveCommand = async function() {
     };
     
     try {
+        // Mevcut komutları al
+        let currentCommands = allCommands[catKey]?.commands || {};
+        
         // Eski komutu sil (isim değiştiyse)
         if (oldCmdKey && oldCmdKey !== cmdKey) {
-            await commandsRef.child(`${catKey}/commands/${oldCmdKey}`).remove();
+            delete currentCommands[oldCmdKey];
         }
         
-        await commandsRef.child(`${catKey}/commands/${cmdKey}`).set(cmdData);
+        // Yeni komutu ekle
+        currentCommands[cmdKey] = cmdData;
+        
+        // Firestore'a yaz
+        await db.collection('commands').doc(catKey).update({
+            commands: currentCommands
+        });
         
         closeCommandModal();
         showToast(oldCmdKey ? '✅ Komut güncellendi!' : '✅ Komut eklendi!', 'success');
         
-        // Kategoriyi açık tut
         if (!openCategories.includes(catKey)) {
             openCategories.push(catKey);
         }
@@ -598,7 +621,13 @@ window.deleteCommand = async function(catKey, cmdKey) {
     }
     
     try {
-        await commandsRef.child(`${catKey}/commands/${cmdKey}`).remove();
+        let currentCommands = { ...(allCommands[catKey]?.commands || {}) };
+        delete currentCommands[cmdKey];
+        
+        await db.collection('commands').doc(catKey).update({
+            commands: currentCommands
+        });
+        
         showToast('✅ Komut silindi!', 'success');
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
@@ -607,13 +636,11 @@ window.deleteCommand = async function(catKey, cmdKey) {
 
 // ===== MODAL DIŞINA TIKLANINCA KAPAT =====
 document.addEventListener('click', (e) => {
-    // Kategori modal
     const categoryModal = document.getElementById('categoryModal');
     if (e.target === categoryModal) {
         closeCategoryModal();
     }
     
-    // Komut modal
     const commandModal = document.getElementById('commandModal');
     if (e.target === commandModal) {
         closeCommandModal();
@@ -674,4 +701,4 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-console.log('✅ Admin.js hazır!');
+console.log('✅ Admin.js hazır! (Firestore)');
