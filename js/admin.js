@@ -1,8 +1,8 @@
 // ========================================
-// ADMIN.JS - Yönetici Paneli (FIRESTORE + STATS)
+// ADMIN.JS - Yönetici Paneli (FULL v3 - FIXED)
 // ========================================
 
-console.log('🎛️ Admin.js yükleniyor (Firestore + Stats)...');
+console.log('🎛️ Admin.js yükleniyor...');
 
 // ===== GLOBAL DEĞİŞKENLER =====
 let allCommands = {};
@@ -81,34 +81,18 @@ document.querySelectorAll('.sidebar-link').forEach(link => {
     });
 });
 
-// ===== STATS TABS =====
-document.querySelectorAll('.stats-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-        const tabId = tab.dataset.tab;
-        
-        document.querySelectorAll('.stats-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        
-        document.querySelectorAll('.stats-tab-content').forEach(c => c.classList.remove('active'));
-        document.getElementById(`tab-${tabId}`).classList.add('active');
-    });
-});
-
 // ===== LOAD ALL DATA =====
 function loadAllData() {
     loadHomepageData();
     loadBotStatus();
-    loadBotStats();
-    loadServerList();
-    loadEconomyLeaderboard();
-    loadMusicSessions();
+    loadStats();
     loadCommands();
 }
 
-// ===== LOAD HOMEPAGE DATA (FIRESTORE) =====
+// ===== LOAD HOMEPAGE DATA =====
 function loadHomepageData() {
-    db.collection('settings').doc('homepage').onSnapshot((doc) => {
-        const data = doc.exists ? doc.data() : {};
+    homepageRef.on('value', (snapshot) => {
+        const data = snapshot.val() || {};
         
         document.getElementById('botName').value = data.botName || '';
         document.getElementById('logoUrl').value = data.logoUrl || '';
@@ -125,19 +109,19 @@ function loadHomepageData() {
 }
 
 function updatePreview(inputId, previewId, imgId) {
-    const url = document.getElementById(inputId)?.value;
+    const url = document.getElementById(inputId).value;
     const preview = document.getElementById(previewId);
     const img = document.getElementById(imgId);
     
-    if (url && preview && img) {
+    if (url) {
         preview.style.display = 'block';
         img.src = url;
-    } else if (preview) {
+    } else {
         preview.style.display = 'none';
     }
 }
 
-// ===== SAVE HOMEPAGE DATA (FIRESTORE) =====
+// ===== SAVE HOMEPAGE DATA =====
 window.saveHomepageData = async function() {
     const data = {
         botName: document.getElementById('botName').value,
@@ -147,30 +131,26 @@ window.saveHomepageData = async function() {
         heroTitle: document.getElementById('heroTitle').value,
         heroHighlight: document.getElementById('heroHighlight').value,
         heroDescription: document.getElementById('heroDescription').value,
-        badgeText: document.getElementById('badgeText').value,
-        lastUpdate: firebase.firestore.FieldValue.serverTimestamp()
+        badgeText: document.getElementById('badgeText').value
     };
     
     try {
-        await db.collection('settings').doc('homepage').set(data, { merge: true });
+        await homepageRef.set(data);
         showToast('✅ Kaydedildi! Ana sayfayı yenile.', 'success');
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
     }
 }
 
-// ===== LOAD BOT STATUS (FIRESTORE) =====
+// ===== LOAD BOT STATUS =====
 function loadBotStatus() {
-    db.collection('bot_stats').doc('general').onSnapshot((doc) => {
-        const status = doc.exists ? doc.data() : {};
+    db.ref('botStatus').on('value', (snapshot) => {
+        const status = snapshot.val();
         const statusEl = document.getElementById('botStatus');
-        
-        if (!statusEl) return;
-        
         const dot = statusEl.querySelector('.status-dot');
         const text = statusEl.querySelector('span:last-child');
         
-        if (status && status.status === 'online') {
+        if (status && status.online) {
             dot.className = 'status-dot online';
             text.textContent = 'Bot Çevrimiçi';
             statusEl.style.background = 'rgba(87, 242, 135, 0.1)';
@@ -184,233 +164,35 @@ function loadBotStatus() {
     });
 }
 
-// ========================================
-// 📊 BOT İSTATİSTİKLERİ (YENİ)
-// ========================================
-
-function loadBotStats() {
-    console.log('📊 Bot istatistikleri yükleniyor...');
-    
-    db.collection('bot_stats').doc('general').onSnapshot((doc) => {
-        if (!doc.exists) {
-            console.log('⚠️ Bot stats bulunamadı');
-            return;
-        }
+// ===== LOAD STATS =====
+function loadStats() {
+    statsRef.on('value', (snapshot) => {
+        const data = snapshot.val() || {};
         
-        const data = doc.data();
-        console.log('✅ Bot stats yüklendi:', data);
+        document.getElementById('adminTotalServers').textContent = data.totalServers || 0;
+        document.getElementById('adminTotalUsers').textContent = data.totalUsers || 0;
+        document.getElementById('adminActivePlayers').textContent = data.activePlayers || 0;
+        document.getElementById('adminUptime').textContent = data.uptime || '0s';
         
-        // Ana kartlar
-        document.getElementById('statServers').textContent = formatNumber(data.server_count || 0);
-        document.getElementById('statUsers').textContent = formatNumber(data.user_count || 0);
-        document.getElementById('statCommands').textContent = data.command_count || 0;
-        document.getElementById('statUptime').textContent = data.uptime || '-';
-        document.getElementById('statVoice').textContent = data.voice_connections || 0;
-        document.getElementById('statPing').textContent = data.ping ? `${data.ping}ms` : '-';
-        
-        // Son güncelleme
-        if (data.last_update) {
-            const date = new Date(data.last_update);
+        if (data.lastUpdate) {
+            const date = new Date(data.lastUpdate);
             document.getElementById('lastUpdate').textContent = date.toLocaleString('tr-TR');
         }
     });
-    
-    // Müzik stats
-    db.collection('bot_stats').doc('music').onSnapshot((doc) => {
-        if (!doc.exists) return;
-        
-        const data = doc.data();
-        document.getElementById('statListeners').textContent = data.total_listeners || 0;
-    });
 }
 
 // ========================================
-// 🏠 SUNUCU LİSTESİ
-// ========================================
-
-function loadServerList() {
-    console.log('🏠 Sunucu listesi yükleniyor...');
-    
-    db.collection('bot_stats').doc('servers').onSnapshot((doc) => {
-        const container = document.getElementById('serverList');
-        const countEl = document.getElementById('serverCount');
-        
-        if (!doc.exists || !doc.data().servers) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-server"></i>
-                    <p>Henüz sunucu verisi yok</p>
-                </div>
-            `;
-            return;
-        }
-        
-        const servers = doc.data().servers;
-        countEl.textContent = `${servers.length} sunucu`;
-        
-        container.innerHTML = servers.map(server => {
-            const iconContent = server.icon 
-                ? `<img src="${server.icon}" alt="${server.name}" class="server-icon">`
-                : `<div class="server-icon">${server.name.charAt(0).toUpperCase()}</div>`;
-            
-            const boostBadge = server.boost_level > 0 
-                ? `<span class="server-badge boost">Level ${server.boost_level}</span>` 
-                : '';
-            
-            return `
-                <div class="server-item">
-                    ${iconContent}
-                    <div class="server-info">
-                        <div class="server-name">${escapeHtml(server.name)}</div>
-                        <div class="server-members">
-                            <i class="fas fa-users"></i> ${formatNumber(server.member_count)} üye
-                            ${server.boost_count > 0 ? `<span style="margin-left: 10px;"><i class="fas fa-gem" style="color: #F47FFF;"></i> ${server.boost_count}</span>` : ''}
-                        </div>
-                    </div>
-                    ${boostBadge}
-                </div>
-            `;
-        }).join('');
-    });
-}
-
-// ========================================
-// 💰 EKONOMİ LEADERBOARD
-// ========================================
-
-function loadEconomyLeaderboard() {
-    console.log('💰 Ekonomi leaderboard yükleniyor...');
-    
-    db.collection('leaderboards').doc('economy').onSnapshot((doc) => {
-        const container = document.getElementById('leaderboardList');
-        const countEl = document.getElementById('economyUserCount');
-        const totalMoneyEl = document.getElementById('economyTotalMoney');
-        const totalCashEl = document.getElementById('economyTotalCash');
-        const totalBankEl = document.getElementById('economyTotalBank');
-        const statTotalEl = document.getElementById('statTotalEconomy');
-        
-        if (!doc.exists) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-coins"></i>
-                    <p>Henüz ekonomi verisi yok</p>
-                </div>
-            `;
-            return;
-        }
-        
-        const data = doc.data();
-        const users = data.users || [];
-        
-        // Özet bilgiler
-        countEl.textContent = `${data.total_users || users.length} kullanıcı`;
-        totalMoneyEl.textContent = formatNumber(data.total_economy || 0) + '💰';
-        totalCashEl.textContent = formatNumber(data.total_cash || 0) + '💵';
-        totalBankEl.textContent = formatNumber(data.total_bank || 0) + '🏦';
-        statTotalEl.textContent = formatNumber(data.total_economy || 0);
-        
-        // Leaderboard listesi
-        container.innerHTML = users.slice(0, 50).map((user, index) => {
-            const rank = index + 1;
-            const rankClass = rank === 1 ? 'top-1' : rank === 2 ? 'top-2' : rank === 3 ? 'top-3' : '';
-            
-            const avatar = user.avatar 
-                ? `<img src="${user.avatar}" alt="${user.username}" class="leaderboard-avatar">`
-                : `<div class="leaderboard-avatar" style="background: var(--blurple); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">${(user.username || '?').charAt(0).toUpperCase()}</div>`;
-            
-            return `
-                <div class="leaderboard-item ${rankClass}">
-                    <div class="leaderboard-rank">${rank}</div>
-                    ${avatar}
-                    <div class="leaderboard-info">
-                        <div class="leaderboard-name">${escapeHtml(user.display_name || user.username || 'Bilinmeyen')}</div>
-                        <div style="font-size: 11px; color: var(--text-muted);">
-                            💵 ${formatNumber(user.cash || 0)} | 🏦 ${formatNumber(user.bank || 0)}
-                        </div>
-                    </div>
-                    <div class="leaderboard-balance">${formatNumber(user.total || 0)}💰</div>
-                </div>
-            `;
-        }).join('');
-    });
-}
-
-// ========================================
-// 🎵 MÜZİK OTURUMLARI
-// ========================================
-
-function loadMusicSessions() {
-    console.log('🎵 Müzik oturumları yükleniyor...');
-    
-    db.collection('bot_stats').doc('music').onSnapshot((doc) => {
-        const container = document.getElementById('musicList');
-        const countEl = document.getElementById('musicActiveCount');
-        
-        if (!doc.exists) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-music"></i>
-                    <p>Aktif müzik oturumu yok</p>
-                </div>
-            `;
-            countEl.textContent = '0 aktif';
-            return;
-        }
-        
-        const data = doc.data();
-        const sessions = data.sessions || [];
-        
-        countEl.textContent = `${data.active_count || 0} aktif, ${data.total_connections || 0} bağlantı`;
-        
-        if (sessions.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-music"></i>
-                    <p>Aktif müzik oturumu yok</p>
-                </div>
-            `;
-            return;
-        }
-        
-        container.innerHTML = sessions.map(session => {
-            const statusClass = session.is_playing ? 'playing' : 'paused';
-            const statusIcon = session.is_playing ? 'fa-play' : session.is_paused ? 'fa-pause' : 'fa-stop';
-            const statusText = session.is_playing ? 'Çalıyor' : session.is_paused ? 'Duraklatıldı' : 'Durduruldu';
-            
-            return `
-                <div class="music-item ${session.is_playing ? 'playing' : ''}">
-                    <div class="music-status ${statusClass}">
-                        <i class="fas ${statusIcon}"></i>
-                    </div>
-                    <div class="music-info">
-                        <div class="music-server">${escapeHtml(session.guild_name)}</div>
-                        <div class="music-channel">
-                            <i class="fas fa-volume-up"></i> ${escapeHtml(session.channel_name)} • ${statusText}
-                        </div>
-                    </div>
-                    <div class="music-listeners">
-                        <i class="fas fa-headphones"></i>
-                        ${session.listeners}
-                    </div>
-                </div>
-            `;
-        }).join('');
-    });
-}
-
-// ========================================
-// KOMUT YÖNETİMİ (Aynı kalıyor)
+// KOMUT YÖNETİMİ
 // ========================================
 
 function loadCommands() {
     console.log('🎮 Komutlar yükleniyor...');
     
-    db.collection('commands').orderBy('order', 'asc').onSnapshot((snapshot) => {
+    commandsRef.on('value', (snapshot) => {
+        const commands = snapshot.val();
         const container = document.getElementById('commandsList');
         
-        if (!container) return;
-        
-        if (snapshot.empty) {
+        if (!commands) {
             container.innerHTML = `
                 <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
                     <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
@@ -418,21 +200,18 @@ function loadCommands() {
                     <p style="font-size: 13px;">Yukarıdaki "Yeni Kategori Ekle" butonuna tıklayarak başla!</p>
                 </div>
             `;
-            allCommands = {};
             return;
         }
         
-        allCommands = {};
+        allCommands = commands;
         container.innerHTML = '';
         
-        let index = 0;
-        const totalDocs = snapshot.size;
+        // Kategorileri sırala
+        const sortedCategories = Object.entries(commands).sort((a, b) => {
+            return (a[1].order || 0) - (b[1].order || 0);
+        });
         
-        snapshot.forEach((doc) => {
-            const catKey = doc.id;
-            const category = doc.data();
-            allCommands[catKey] = category;
-            
+        sortedCategories.forEach(([catKey, category], index) => {
             const cmdCount = Object.keys(category.commands || {}).length;
             const bgColor = category.color ? hexToRgba(category.color, 0.2) : 'rgba(88, 101, 242, 0.2)';
             const iconColor = category.color || '#5865F2';
@@ -456,7 +235,7 @@ function loadCommands() {
                         <button class="btn-icon" onclick="moveCategoryUp('${catKey}')" title="Yukarı Taşı" ${index === 0 ? 'disabled style="opacity:0.3"' : ''}>
                             <i class="fas fa-arrow-up"></i>
                         </button>
-                        <button class="btn-icon" onclick="moveCategoryDown('${catKey}')" title="Aşağı Taşı" ${index === totalDocs - 1 ? 'disabled style="opacity:0.3"' : ''}>
+                        <button class="btn-icon" onclick="moveCategoryDown('${catKey}')" title="Aşağı Taşı" ${index === sortedCategories.length - 1 ? 'disabled style="opacity:0.3"' : ''}>
                             <i class="fas fa-arrow-down"></i>
                         </button>
                         <button class="btn-icon" onclick="editCategory('${catKey}')" title="Kategoriyi Düzenle">
@@ -472,7 +251,7 @@ function loadCommands() {
                 </div>
                 <div class="category-commands ${isOpen ? 'open' : ''}" id="cat-${catKey}">
                     <div class="commands-list">
-                        ${renderCommandsList(catKey, category.commands || {})}
+                        ${renderCommands(catKey, category.commands || {})}
                     </div>
                     <button class="add-command-btn" onclick="showCommandModal('${catKey}')">
                         <i class="fas fa-plus"></i> Yeni Komut Ekle
@@ -481,14 +260,11 @@ function loadCommands() {
             `;
             
             container.appendChild(catDiv);
-            index++;
         });
-        
-        console.log('✅ Komutlar yüklendi:', Object.keys(allCommands).length, 'kategori');
     });
 }
 
-function renderCommandsList(catKey, commands) {
+function renderCommands(catKey, commands) {
     if (!commands || Object.keys(commands).length === 0) {
         return '<p class="no-commands">Bu kategoride henüz komut yok.</p>';
     }
@@ -521,8 +297,6 @@ window.toggleCategory = function(catKey) {
     const content = document.getElementById(`cat-${catKey}`);
     const header = document.querySelector(`[data-cat="${catKey}"]`);
     
-    if (!content || !header) return;
-    
     if (content.classList.contains('open')) {
         content.classList.remove('open');
         header.classList.remove('open');
@@ -538,19 +312,18 @@ window.toggleCategory = function(catKey) {
 
 // ===== MOVE CATEGORY =====
 window.moveCategoryUp = async function(catKey) {
-    const keys = Object.keys(allCommands);
-    const sorted = keys.sort((a, b) => (allCommands[a].order || 0) - (allCommands[b].order || 0));
-    const index = sorted.indexOf(catKey);
+    const categories = Object.entries(allCommands).sort((a, b) => (a[1].order || 0) - (b[1].order || 0));
+    const index = categories.findIndex(([key]) => key === catKey);
     
     if (index <= 0) return;
     
     try {
-        const prevKey = sorted[index - 1];
+        const prevKey = categories[index - 1][0];
         const currentOrder = allCommands[catKey].order || index;
         const prevOrder = allCommands[prevKey].order || index - 1;
         
-        await db.collection('commands').doc(catKey).update({ order: prevOrder });
-        await db.collection('commands').doc(prevKey).update({ order: currentOrder });
+        await commandsRef.child(`${catKey}/order`).set(prevOrder);
+        await commandsRef.child(`${prevKey}/order`).set(currentOrder);
         
         showToast('✅ Kategori yukarı taşındı!', 'success');
     } catch (error) {
@@ -559,19 +332,18 @@ window.moveCategoryUp = async function(catKey) {
 }
 
 window.moveCategoryDown = async function(catKey) {
-    const keys = Object.keys(allCommands);
-    const sorted = keys.sort((a, b) => (allCommands[a].order || 0) - (allCommands[b].order || 0));
-    const index = sorted.indexOf(catKey);
+    const categories = Object.entries(allCommands).sort((a, b) => (a[1].order || 0) - (b[1].order || 0));
+    const index = categories.findIndex(([key]) => key === catKey);
     
-    if (index >= sorted.length - 1) return;
+    if (index >= categories.length - 1) return;
     
     try {
-        const nextKey = sorted[index + 1];
+        const nextKey = categories[index + 1][0];
         const currentOrder = allCommands[catKey].order || index;
         const nextOrder = allCommands[nextKey].order || index + 1;
         
-        await db.collection('commands').doc(catKey).update({ order: nextOrder });
-        await db.collection('commands').doc(nextKey).update({ order: currentOrder });
+        await commandsRef.child(`${catKey}/order`).set(nextOrder);
+        await commandsRef.child(`${nextKey}/order`).set(currentOrder);
         
         showToast('✅ Kategori aşağı taşındı!', 'success');
     } catch (error) {
@@ -579,8 +351,13 @@ window.moveCategoryDown = async function(catKey) {
     }
 }
 
-// ===== KATEGORİ MODAL =====
+// ========================================
+// ✅ KATEGORİ MODAL - DÜZELTİLDİ
+// ========================================
+
+// 🔥 BU FONKSİYON EKSİKTİ - HTML'den çağrılıyor
 window.showAddCategoryModal = function() {
+    console.log('📂 Yeni kategori modal açılıyor...');
     showCategoryModal(null);
 }
 
@@ -589,7 +366,10 @@ window.showCategoryModal = function(editKey = null) {
     const title = document.getElementById('categoryModalTitle');
     const editingKeyInput = document.getElementById('editingCategoryKey');
     
-    if (!modal) return;
+    if (!modal) {
+        console.error('❌ categoryModal bulunamadı!');
+        return;
+    }
     
     modal.classList.add('active');
     
@@ -598,18 +378,23 @@ window.showCategoryModal = function(editKey = null) {
     }
     
     if (editKey && allCommands[editKey]) {
+        // Düzenleme modu
         title.innerHTML = '<i class="fas fa-edit"></i> Kategori Düzenle';
         document.getElementById('newCategoryName').value = allCommands[editKey].name || '';
         document.getElementById('newCategoryIcon').value = allCommands[editKey].icon || 'fa-terminal';
         document.getElementById('newCategoryColor').value = allCommands[editKey].color || '#5865F2';
     } else {
+        // Yeni ekleme modu
         title.innerHTML = '<i class="fas fa-folder-plus"></i> Yeni Kategori Ekle';
         document.getElementById('newCategoryName').value = '';
         document.getElementById('newCategoryIcon').value = 'fa-terminal';
         document.getElementById('newCategoryColor').value = '#5865F2';
     }
     
-    setTimeout(() => document.getElementById('newCategoryName').focus(), 100);
+    // İlk inputa odaklan
+    setTimeout(() => {
+        document.getElementById('newCategoryName').focus();
+    }, 100);
 }
 
 window.editCategory = function(catKey) {
@@ -617,30 +402,42 @@ window.editCategory = function(catKey) {
 }
 
 window.closeCategoryModal = function() {
-    document.getElementById('categoryModal')?.classList.remove('active');
+    const modal = document.getElementById('categoryModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
 }
 
 window.saveCategory = async function() {
-    const editKey = document.getElementById('editingCategoryKey')?.value || '';
+    const editingKeyInput = document.getElementById('editingCategoryKey');
+    const editKey = editingKeyInput ? editingKeyInput.value : '';
     const name = document.getElementById('newCategoryName').value.trim();
     const icon = document.getElementById('newCategoryIcon').value.trim() || 'fa-terminal';
     const color = document.getElementById('newCategoryColor').value;
     
     if (!name) {
         showToast('❌ Kategori adı gerekli!', 'error');
+        document.getElementById('newCategoryName').focus();
         return;
     }
     
     try {
         if (editKey) {
-            await db.collection('commands').doc(editKey).update({ name, icon, color });
+            // Düzenleme
+            await commandsRef.child(editKey).update({
+                name: name,
+                icon: icon,
+                color: color
+            });
             showToast('✅ Kategori güncellendi!', 'success');
         } else {
+            // Yeni ekleme
             const catKey = name.toLowerCase()
                 .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
                 .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
                 .replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
             
+            // Aynı key var mı kontrol et
             if (allCommands[catKey]) {
                 showToast('❌ Bu isimde kategori zaten var!', 'error');
                 return;
@@ -648,14 +445,19 @@ window.saveCategory = async function() {
             
             const maxOrder = Object.values(allCommands || {}).reduce((max, cat) => Math.max(max, cat.order || 0), 0);
             
-            await db.collection('commands').doc(catKey).set({
-                name, icon, color, order: maxOrder + 1, commands: {}
+            await commandsRef.child(catKey).set({
+                name: name,
+                icon: icon,
+                color: color,
+                order: maxOrder + 1,
+                commands: {}
             });
             showToast('✅ Kategori eklendi!', 'success');
         }
         
         closeCategoryModal();
     } catch (error) {
+        console.error('Kategori kaydetme hatası:', error);
         showToast('❌ Hata: ' + error.message, 'error');
     }
 }
@@ -665,25 +467,31 @@ window.deleteCategory = async function(catKey) {
     const cmdCount = Object.keys(category?.commands || {}).length;
     
     const confirmMsg = cmdCount > 0 
-        ? `"${category?.name}" kategorisinde ${cmdCount} komut var! Silmek istediğine emin misin?`
+        ? `"${category?.name}" kategorisinde ${cmdCount} komut var!\n\nSilmek istediğine emin misin?`
         : `"${category?.name}" kategorisini silmek istediğine emin misin?`;
     
     if (!confirm(confirmMsg)) return;
     
     try {
-        await db.collection('commands').doc(catKey).delete();
+        await commandsRef.child(catKey).remove();
         showToast('✅ Kategori silindi!', 'success');
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
     }
 }
 
-// ===== KOMUT MODAL =====
+// ========================================
+// ✅ KOMUT MODAL - DÜZELTİLDİ
+// ========================================
+
 window.showCommandModal = function(catKey, cmdKey = null) {
     const modal = document.getElementById('commandModal');
     const title = document.getElementById('commandModalTitle');
     
-    if (!modal) return;
+    if (!modal) {
+        console.error('❌ commandModal bulunamadı!');
+        return;
+    }
     
     modal.classList.add('active');
     document.getElementById('editCategoryKey').value = catKey;
@@ -708,7 +516,10 @@ window.showCommandModal = function(catKey, cmdKey = null) {
         document.getElementById('cmdPermission').value = 'Herkes';
     }
     
-    setTimeout(() => document.getElementById('cmdName').focus(), 100);
+    // İlk inputa odaklan
+    setTimeout(() => {
+        document.getElementById('cmdName').focus();
+    }, 100);
 }
 
 window.editCommand = function(catKey, cmdKey) {
@@ -716,7 +527,10 @@ window.editCommand = function(catKey, cmdKey) {
 }
 
 window.closeCommandModal = function() {
-    document.getElementById('commandModal')?.classList.remove('active');
+    const modal = document.getElementById('commandModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
 }
 
 window.saveCommand = async function() {
@@ -730,8 +544,14 @@ window.saveCommand = async function() {
     const example = document.getElementById('cmdExample').value.trim();
     const permission = document.getElementById('cmdPermission').value;
     
-    if (!name || !catKey) {
+    if (!name) {
         showToast('❌ Komut adı gerekli!', 'error');
+        document.getElementById('cmdName').focus();
+        return;
+    }
+    
+    if (!catKey) {
+        showToast('❌ Kategori seçilmedi!', 'error');
         return;
     }
     
@@ -741,7 +561,7 @@ window.saveCommand = async function() {
         .replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     
     const cmdData = {
-        name,
+        name: name,
         shortDesc: shortDesc || 'Açıklama yok',
         description: description || shortDesc || 'Açıklama yok',
         usage: usage || `/${name}`,
@@ -750,23 +570,22 @@ window.saveCommand = async function() {
     };
     
     try {
-        let currentCommands = allCommands[catKey]?.commands || {};
-        
+        // Eski komutu sil (isim değiştiyse)
         if (oldCmdKey && oldCmdKey !== cmdKey) {
-            delete currentCommands[oldCmdKey];
+            await commandsRef.child(`${catKey}/commands/${oldCmdKey}`).remove();
         }
         
-        currentCommands[cmdKey] = cmdData;
-        
-        await db.collection('commands').doc(catKey).update({ commands: currentCommands });
+        await commandsRef.child(`${catKey}/commands/${cmdKey}`).set(cmdData);
         
         closeCommandModal();
         showToast(oldCmdKey ? '✅ Komut güncellendi!' : '✅ Komut eklendi!', 'success');
         
+        // Kategoriyi açık tut
         if (!openCategories.includes(catKey)) {
             openCategories.push(catKey);
         }
     } catch (error) {
+        console.error('Komut kaydetme hatası:', error);
         showToast('❌ Hata: ' + error.message, 'error');
     }
 }
@@ -774,25 +593,34 @@ window.saveCommand = async function() {
 window.deleteCommand = async function(catKey, cmdKey) {
     const cmd = allCommands[catKey]?.commands?.[cmdKey];
     
-    if (!confirm(`"/${cmd?.name || cmdKey}" komutunu silmek istediğine emin misin?`)) return;
+    if (!confirm(`"/${cmd?.name || cmdKey}" komutunu silmek istediğine emin misin?`)) {
+        return;
+    }
     
     try {
-        let currentCommands = { ...(allCommands[catKey]?.commands || {}) };
-        delete currentCommands[cmdKey];
-        
-        await db.collection('commands').doc(catKey).update({ commands: currentCommands });
+        await commandsRef.child(`${catKey}/commands/${cmdKey}`).remove();
         showToast('✅ Komut silindi!', 'success');
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
     }
 }
 
-// ===== MODAL KAPAMA =====
+// ===== MODAL DIŞINA TIKLANINCA KAPAT =====
 document.addEventListener('click', (e) => {
-    if (e.target === document.getElementById('categoryModal')) closeCategoryModal();
-    if (e.target === document.getElementById('commandModal')) closeCommandModal();
+    // Kategori modal
+    const categoryModal = document.getElementById('categoryModal');
+    if (e.target === categoryModal) {
+        closeCategoryModal();
+    }
+    
+    // Komut modal
+    const commandModal = document.getElementById('commandModal');
+    if (e.target === commandModal) {
+        closeCommandModal();
+    }
 });
 
+// ===== ESC TUŞU İLE MODAL KAPAT =====
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closeCategoryModal();
@@ -824,12 +652,6 @@ function hexToRgba(hex, alpha = 1) {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function formatNumber(num) {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
-    return num.toLocaleString('tr-TR');
-}
-
 function showToast(message, type = 'info') {
     const container = document.getElementById('toastContainer');
     if (!container) return;
@@ -837,7 +659,12 @@ function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     
-    const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        info: 'fa-info-circle'
+    };
+    
     toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i> ${message}`;
     container.appendChild(toast);
     
@@ -847,4 +674,4 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-console.log('✅ Admin.js hazır! (Firestore + Stats)');
+console.log('✅ Admin.js hazır!');
