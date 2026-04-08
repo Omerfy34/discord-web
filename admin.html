@@ -25,191 +25,6 @@
             margin-top: 5px;
             text-align: center;
         }
-        .command-category {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            margin-bottom: 15px;
-            overflow: hidden;
-        }
-        .category-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 20px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .category-header:hover {
-            background: rgba(255,255,255,0.03);
-        }
-        .category-header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .category-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        .category-name {
-            font-weight: 700;
-            font-size: 16px;
-        }
-        .category-count {
-            font-size: 12px;
-            color: var(--text-muted);
-            background: var(--bg-input);
-            padding: 2px 10px;
-            border-radius: 20px;
-        }
-        .category-toggle {
-            color: var(--text-muted);
-            transition: transform 0.3s;
-        }
-        .category-header.open .category-toggle {
-            transform: rotate(180deg);
-        }
-        .category-commands {
-            display: none;
-            padding: 0 20px 20px;
-        }
-        .category-commands.open {
-            display: block;
-        }
-        .command-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 15px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-        .command-item:hover {
-            border-color: var(--blurple);
-        }
-        .command-name {
-            font-weight: 600;
-            color: var(--blurple);
-            font-family: monospace;
-        }
-        .command-short {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-left: 10px;
-        }
-        .command-actions {
-            display: flex;
-            gap: 8px;
-        }
-        .btn-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255,255,255,0.05);
-            color: var(--text-muted);
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-icon:hover {
-            background: var(--blurple);
-            color: white;
-        }
-        .btn-icon.delete:hover {
-            background: var(--red);
-        }
-        .add-command-btn {
-            width: 100%;
-            padding: 12px;
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            background: transparent;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .add-command-btn:hover {
-            border-color: var(--blurple);
-            color: var(--blurple);
-        }
-        .edit-form {
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 10px;
-        }
-        .edit-form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        .edit-form-row.full {
-            grid-template-columns: 1fr;
-        }
-        .edit-form label {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-            display: block;
-        }
-        .edit-form-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 15px;
-        }
-        .add-category-btn {
-            margin-bottom: 20px;
-        }
-        /* Modal */
-        .modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            padding: 20px;
-        }
-        .modal-backdrop.active {
-            display: flex;
-        }
-        .modal-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
         .help-text {
             background: rgba(88, 101, 242, 0.1);
             border: 1px solid rgba(88, 101, 242, 0.3);
@@ -223,27 +38,18 @@
             color: var(--blurple);
             margin-right: 8px;
         }
-        
-        /* Category Header Actions */
-        .category-header-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .help-text.warning {
+            background: rgba(254, 231, 92, 0.1);
+            border-color: rgba(254, 231, 92, 0.3);
         }
-        .category-actions {
-            display: flex;
-            gap: 5px;
-        }
-        .category-actions .btn-icon {
-            width: 28px;
-            height: 28px;
-            font-size: 12px;
+        .help-text.warning i {
+            color: var(--yellow);
         }
     </style>
 </head>
 <body class="admin-body">
 
-    <!-- Login Screen -->
+    <!-- ==================== LOGIN SCREEN ==================== -->
     <div class="login-screen" id="loginScreen">
         <div class="login-card">
             <div class="login-header">
@@ -270,88 +76,90 @@
         </div>
     </div>
 
-    <!-- Admin Dashboard -->
+    <!-- ==================== ADMIN DASHBOARD ==================== -->
     <div class="admin-dashboard" id="adminDashboard" style="display: none;">
         
-        <!-- Sidebar -->
-<aside class="admin-sidebar">
-    <div class="sidebar-header">
-        <img id="sidebar-logo" src="assets/images/logo.png" alt="Logo">
-        <span>Admin Panel</span>
-    </div>
-    <nav class="sidebar-nav">
-        <!-- Ana Bölüm -->
-        <div class="sidebar-section">
-            <span class="sidebar-section-title">📊 Genel</span>
-        </div>
-        <a href="#" class="sidebar-link active" data-panel="homepage">
-            <i class="fas fa-home"></i>
-            <span>Ana Sayfa</span>
-        </a>
-        <a href="#" class="sidebar-link" data-panel="stats">
-            <i class="fas fa-chart-bar"></i>
-            <span>İstatistikler</span>
-        </a>
-        
-        <!-- Yönetim Bölümü -->
-        <div class="sidebar-section">
-            <span class="sidebar-section-title">⚙️ Yönetim</span>
-        </div>
-        <a href="#" class="sidebar-link" data-panel="servers">
-            <i class="fas fa-server"></i>
-            <span>Sunucu Yönetimi</span>
-        </a>
-        <a href="#" class="sidebar-link" data-panel="economy">
-            <i class="fas fa-coins"></i>
-            <span>Ekonomi</span>
-        </a>
-        <a href="#" class="sidebar-link" data-panel="commands">
-            <i class="fas fa-terminal"></i>
-            <span>Komutlar</span>
-        </a>
-        
-        <!-- İletişim Bölümü -->
-        <div class="sidebar-section">
-            <span class="sidebar-section-title">📢 İletişim</span>
-        </div>
-        <a href="#" class="sidebar-link" data-panel="messaging">
-            <i class="fas fa-paper-plane"></i>
-            <span>Mesajlaşma</span>
-        </a>
-        
-        <!-- Araçlar Bölümü -->
-        <div class="sidebar-section">
-            <span class="sidebar-section-title">🛠️ Araçlar</span>
-        </div>
-        <a href="#" class="sidebar-link" data-panel="tools">
-            <i class="fas fa-tools"></i>
-            <span>Bot Araçları</span>
-        </a>
-        <a href="#" class="sidebar-link" data-panel="logs">
-            <i class="fas fa-history"></i>
-            <span>Log Kayıtları</span>
-        </a>
-        
-    </nav>
-    <div class="sidebar-footer">
-        <div class="admin-user-info">
-            <div class="admin-avatar">
-                <i class="fas fa-user-shield"></i>
+        <!-- ==================== SIDEBAR ==================== -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <img id="sidebar-logo" src="assets/images/logo.png" alt="Logo">
+                <span>Admin Panel</span>
             </div>
-            <div class="admin-details">
-                <span class="admin-name">Admin</span>
-                <span class="admin-role">Bot Sahibi</span>
+            
+            <nav class="sidebar-nav">
+                <!-- 📊 GENEL -->
+                <div class="sidebar-section">
+                    <span class="sidebar-section-title">📊 Genel</span>
+                </div>
+                <a href="#" class="sidebar-link active" data-panel="homepage">
+                    <i class="fas fa-home"></i>
+                    <span>Ana Sayfa</span>
+                </a>
+                <a href="#" class="sidebar-link" data-panel="stats">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>İstatistikler</span>
+                </a>
+                
+                <!-- ⚙️ YÖNETİM -->
+                <div class="sidebar-section">
+                    <span class="sidebar-section-title">⚙️ Yönetim</span>
+                </div>
+                <a href="#" class="sidebar-link" data-panel="servers">
+                    <i class="fas fa-server"></i>
+                    <span>Sunucu Yönetimi</span>
+                </a>
+                <a href="#" class="sidebar-link" data-panel="economy">
+                    <i class="fas fa-coins"></i>
+                    <span>Ekonomi</span>
+                </a>
+                <a href="#" class="sidebar-link" data-panel="commands">
+                    <i class="fas fa-terminal"></i>
+                    <span>Komutlar</span>
+                </a>
+                
+                <!-- 📢 İLETİŞİM -->
+                <div class="sidebar-section">
+                    <span class="sidebar-section-title">📢 İletişim</span>
+                </div>
+                <a href="#" class="sidebar-link" data-panel="messaging">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Mesajlaşma</span>
+                </a>
+                
+                <!-- 🛠️ ARAÇLAR -->
+                <div class="sidebar-section">
+                    <span class="sidebar-section-title">🛠️ Araçlar</span>
+                </div>
+                <a href="#" class="sidebar-link" data-panel="tools">
+                    <i class="fas fa-tools"></i>
+                    <span>Bot Araçları</span>
+                </a>
+                <a href="#" class="sidebar-link" data-panel="logs">
+                    <i class="fas fa-history"></i>
+                    <span>Log Kayıtları</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="admin-user-info">
+                    <div class="admin-avatar">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="admin-details">
+                        <span class="admin-name">Admin</span>
+                        <span class="admin-role">Bot Sahibi</span>
+                    </div>
+                </div>
+                <a href="index.html" class="btn btn-ghost btn-block" style="margin-bottom: 10px;">
+                    <i class="fas fa-external-link-alt"></i> Siteyi Görüntüle
+                </a>
+                <button class="btn btn-ghost btn-block" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                </button>
             </div>
-        </div>
-        <a href="index.html" class="btn btn-ghost btn-block" style="margin-bottom: 10px;">
-            <i class="fas fa-external-link-alt"></i> Siteyi Görüntüle
-        </a>
-        <button class="btn btn-ghost btn-block" id="logoutBtn">
-            <i class="fas fa-sign-out-alt"></i> Çıkış Yap
-        </button>
-    </div>
-</aside>
-        <!-- Main Content -->
+        </aside>
+
+        <!-- ==================== MAIN CONTENT ==================== -->
         <main class="admin-main">
             
             <!-- Top Bar -->
@@ -476,29 +284,6 @@
                     </div>
                 </div>
 
-                <!-- ==================== COMMANDS PANEL ==================== -->
-                <div class="panel" id="commands">
-                    <div class="section-card">
-                        <h2><i class="fas fa-terminal"></i> Komut Yönetimi</h2>
-                        
-                        <div class="help-text">
-                            <i class="fas fa-info-circle"></i>
-                            Kategori başlığına tıklayarak komutları görebilirsin.
-                            Her komutun yanındaki <strong>düzenle</strong> butonuyla değişiklik yapabilirsin.
-                        </div>
-                        
-                        <button class="btn btn-primary add-category-btn" onclick="showAddCategoryModal()">
-                            <i class="fas fa-plus"></i> Yeni Kategori Ekle
-                        </button>
-                        
-                        <div id="commandsList">
-                            <p style="text-align: center; color: var(--text-muted); padding: 40px;">
-                                <i class="fas fa-spinner fa-spin"></i> Yükleniyor...
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- ==================== STATS PANEL ==================== -->
                 <div class="panel" id="stats">
                     <div class="section-card">
@@ -555,274 +340,333 @@
                     </div>
                 </div>
 
+                <!-- ==================== SERVERS PANEL ==================== -->
+                <div class="panel" id="servers">
+                    <div class="section-card">
+                        <h2><i class="fas fa-server"></i> Sunucu Yönetimi</h2>
+                        
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i>
+                            Botun bulunduğu tüm sunucuları görüntüle, ara ve yönet.
+                            Veriler bot tarafından otomatik güncellenir.
+                        </div>
+
+                        <!-- Arama ve Filtre -->
+                        <div class="server-controls">
+                            <input type="text" id="serverSearchInput" class="admin-input" placeholder="🔍 Sunucu ara (isim veya ID)...">
+                            <select id="serverSortSelect" class="admin-input" style="max-width: 200px;">
+                                <option value="members">👥 Üye Sayısı</option>
+                                <option value="name">🔤 İsim (A-Z)</option>
+                                <option value="joinDate">📅 Katılım Tarihi</option>
+                            </select>
+                        </div>
+
+                        <!-- Sunucu Listesi -->
+                        <div id="serversList" class="servers-grid">
+                            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 32px; margin-bottom: 15px;"></i>
+                                <p>Sunucular yükleniyor...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== ECONOMY PANEL ==================== -->
+                <div class="panel" id="economy">
+                    <div class="section-card">
+                        <h2><i class="fas fa-coins"></i> Ekonomi Yönetimi</h2>
+                        
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i>
+                            Kullanıcı bakiyelerini yönet, toplu işlemler yap ve ekonomi istatistiklerini gör.
+                        </div>
+
+                        <!-- Ekonomi Stats -->
+                        <div class="stats-dashboard" style="margin-bottom: 30px;">
+                            <div class="stat-card-admin">
+                                <div class="stat-icon" style="background: rgba(254, 231, 92, 0.2); color: #FEE75C;">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="totalMoney">0</span>
+                                    <span class="stat-label">Toplam Para</span>
+                                </div>
+                            </div>
+                            <div class="stat-card-admin">
+                                <div class="stat-icon" style="background: rgba(87, 242, 135, 0.2); color: #57F287;">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="activeEconomyUsers">0</span>
+                                    <span class="stat-label">Aktif Kullanıcı</span>
+                                </div>
+                            </div>
+                            <div class="stat-card-admin">
+                                <div class="stat-icon" style="background: rgba(88, 101, 242, 0.2); color: #5865F2;">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="currentInterest">2.5%</span>
+                                    <span class="stat-label">Faiz Oranı</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hızlı İşlemler -->
+                        <h3 style="margin-bottom: 15px;"><i class="fas fa-bolt"></i> Hızlı İşlemler</h3>
+                        <div class="quick-actions">
+                            <div class="action-card" onclick="showEconomyModal('add')">
+                                <i class="fas fa-plus-circle" style="color: #57F287;"></i>
+                                <span>Para Ekle</span>
+                            </div>
+                            <div class="action-card" onclick="showEconomyModal('remove')">
+                                <i class="fas fa-minus-circle" style="color: #ED4245;"></i>
+                                <span>Para Sil</span>
+                            </div>
+                            <div class="action-card" onclick="showEconomyModal('reset')">
+                                <i class="fas fa-redo" style="color: #FEE75C;"></i>
+                                <span>Kullanıcı Sıfırla</span>
+                            </div>
+                            <div class="action-card" onclick="showInterestModal()">
+                                <i class="fas fa-percentage" style="color: #5865F2;"></i>
+                                <span>Faiz Ayarla</span>
+                            </div>
+                        </div>
+
+                        <!-- En Zengin Kullanıcılar -->
+                        <h3 style="margin: 30px 0 15px;"><i class="fas fa-trophy"></i> En Zengin Kullanıcılar</h3>
+                        <div id="richestUsers" class="leaderboard-list">
+                            <p style="text-align: center; color: var(--text-muted); padding: 30px;">
+                                <i class="fas fa-spinner fa-spin"></i> Yükleniyor...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== COMMANDS PANEL ==================== -->
+                <div class="panel" id="commands">
+                    <div class="section-card">
+                        <h2><i class="fas fa-terminal"></i> Komut Yönetimi</h2>
+                        
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i>
+                            Kategori başlığına tıklayarak komutları görebilirsin.
+                            Her komutun yanındaki <strong>düzenle</strong> butonuyla değişiklik yapabilirsin.
+                        </div>
+                        
+                        <button class="btn btn-primary add-category-btn" onclick="showAddCategoryModal()">
+                            <i class="fas fa-plus"></i> Yeni Kategori Ekle
+                        </button>
+                        
+                        <div id="commandsList">
+                            <p style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                <i class="fas fa-spinner fa-spin"></i> Yükleniyor...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== MESSAGING PANEL ==================== -->
+                <div class="panel" id="messaging">
+                    <div class="section-card">
+                        <h2><i class="fas fa-paper-plane"></i> Mesajlaşma & Duyurular</h2>
+                        
+                        <div class="help-text warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>DİKKAT:</strong> Toplu mesajlar Discord'un rate limitine takılabilir. 
+                            Çok fazla sunucuya aynı anda mesaj göndermekten kaçın!
+                        </div>
+
+                        <!-- Mesaj Türü Seçimi -->
+                        <h3 style="margin-bottom: 15px;"><i class="fas fa-bullseye"></i> Mesaj Türü Seç</h3>
+                        <div class="message-type-selector">
+                            <div class="message-type-card active" data-type="announcement" onclick="selectMessageType('announcement')">
+                                <i class="fas fa-bullhorn"></i>
+                                <span>Tüm Sunuculara Duyuru</span>
+                            </div>
+                            <div class="message-type-card" data-type="dm" onclick="selectMessageType('dm')">
+                                <i class="fas fa-envelope"></i>
+                                <span>Kullanıcıya DM</span>
+                            </div>
+                            <div class="message-type-card" data-type="server" onclick="selectMessageType('server')">
+                                <i class="fas fa-server"></i>
+                                <span>Belirli Sunucuya</span>
+                            </div>
+                        </div>
+
+                        <!-- Mesaj Formu -->
+                        <div class="embed-builder">
+                            <h3><i class="fas fa-palette"></i> Mesaj Tasarımı</h3>
+                            
+                            <!-- Hedef Seçimi (DM/Server için) -->
+                            <div id="targetSelector" style="display: none; margin-bottom: 20px;">
+                                <div class="form-group">
+                                    <label><i class="fas fa-crosshairs"></i> Hedef ID</label>
+                                    <input type="text" id="targetId" class="admin-input" placeholder="Kullanıcı ID veya Sunucu ID">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>📌 Başlık</label>
+                                <input type="text" id="embedTitle" class="admin-input" placeholder="Duyuru Başlığı">
+                            </div>
+
+                            <div class="form-group">
+                                <label>📝 Açıklama</label>
+                                <textarea id="embedDescription" class="admin-input admin-textarea" rows="5" placeholder="Mesaj içeriği..."></textarea>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label>🎨 Renk</label>
+                                    <input type="color" id="embedColor" value="#5865F2" style="width: 100%; height: 50px; border-radius: 8px; border: none; cursor: pointer;">
+                                </div>
+                                <div class="form-group">
+                                    <label>🖼️ Thumbnail URL</label>
+                                    <input type="text" id="embedThumbnail" class="admin-input" placeholder="https://...">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>🔗 Footer</label>
+                                <input type="text" id="embedFooter" class="admin-input" placeholder="WOWSY Bot • 2024">
+                            </div>
+
+                            <!-- Önizleme -->
+                            <h4 style="margin: 20px 0 10px;"><i class="fas fa-eye"></i> Önizleme</h4>
+                            <div class="embed-preview" id="embedPreview">
+                                <div class="embed-preview-title">Başlık</div>
+                                <div class="embed-preview-desc">Açıklama...</div>
+                            </div>
+
+                            <button class="btn btn-primary btn-lg" style="width: 100%; margin-top: 20px;" onclick="sendMessage()">
+                                <i class="fas fa-paper-plane"></i> Mesajı Gönder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== TOOLS PANEL ==================== -->
+                <div class="panel" id="tools">
+                    <div class="section-card">
+                        <h2><i class="fas fa-tools"></i> Bot Araçları</h2>
+                        
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i>
+                            Bu araçlar Discord botunu uzaktan kontrol etmeni sağlar.
+                            Değişiklikler Firebase üzerinden bota iletilir.
+                        </div>
+                        
+                        <div class="tools-grid">
+                            
+                            <!-- Durum Değiştir -->
+                            <div class="tool-card">
+                                <h3><i class="fas fa-signal"></i> Bot Durumu</h3>
+                                <p>Botun Discord'daki görünürlüğünü ve durum mesajını değiştir.</p>
+                                <select id="botStatusType" class="admin-input">
+                                    <option value="online">🟢 Çevrimiçi</option>
+                                    <option value="idle">🟡 Boşta</option>
+                                    <option value="dnd">🔴 Rahatsız Etmeyin</option>
+                                    <option value="invisible">⚫ Görünmez</option>
+                                </select>
+                                <input type="text" id="botStatusText" class="admin-input" placeholder="Durum mesajı...">
+                                <select id="botActivityType" class="admin-input">
+                                    <option value="PLAYING">🎮 Oynuyor</option>
+                                    <option value="WATCHING">👀 İzliyor</option>
+                                    <option value="LISTENING">🎵 Dinliyor</option>
+                                    <option value="COMPETING">🏆 Yarışıyor</option>
+                                </select>
+                                <button class="btn btn-primary" onclick="updateBotStatus()">
+                                    <i class="fas fa-save"></i> Durumu Güncelle
+                                </button>
+                            </div>
+
+                            <!-- Patron Modu -->
+                            <div class="tool-card">
+                                <h3><i class="fas fa-crown"></i> Patron Modu</h3>
+                                <p>Bu mod açıkken tüm komutlar sadece bot sahibine özel olur. Diğer kullanıcılar komut kullanamaz.</p>
+                                <button class="btn btn-primary" id="patronModeBtn" onclick="togglePatronMode()">
+                                    <i class="fas fa-toggle-off"></i> Patron Modunu Aç
+                                </button>
+                            </div>
+
+                            <!-- Gizli Mod -->
+                            <div class="tool-card">
+                                <h3><i class="fas fa-user-secret"></i> Gizli Mod</h3>
+                                <p>Bot görünmez olur ve sadece bot sahibi kullanabilir. Test için idealdir.</p>
+                                <button class="btn btn-primary" id="stealthModeBtn" onclick="toggleStealthMode()">
+                                    <i class="fas fa-toggle-off"></i> Gizli Modu Aç
+                                </button>
+                            </div>
+
+                            <!-- Fake Mesaj -->
+                            <div class="tool-card">
+                                <h3><i class="fas fa-mask"></i> Fake Mesaj</h3>
+                                <p>Bir kullanıcı adına webhook ile sahte mesaj gönder. (Sadece eğlence amaçlı!)</p>
+                                <input type="text" id="fakeUserId" class="admin-input" placeholder="Kullanıcı ID">
+                                <textarea id="fakeMessage" class="admin-input admin-textarea" rows="3" placeholder="Sahte mesaj içeriği..."></textarea>
+                                <button class="btn btn-primary" onclick="sendFakeMessage()">
+                                    <i class="fas fa-paper-plane"></i> Gönder
+                                </button>
+                            </div>
+
+                            <!-- Günlük Rapor -->
+                            <div class="tool-card">
+                                <h3><i class="fas fa-file-alt"></i> Günlük Rapor</h3>
+                                <p>Son 24 saatin detaylı istatistiklerini içeren rapor oluştur.</p>
+                                <button class="btn btn-primary" onclick="generateDailyReport()">
+                                    <i class="fas fa-download"></i> Rapor Oluştur
+                                </button>
+                            </div>
+
+                            <!-- Aktif Kullanıcılar -->
+                            <div class="tool-card">
+                                <h3><i class="fas fa-users"></i> Aktif Kullanıcılar</h3>
+                                <p>Son 1 saatte komut kullanan aktif kullanıcıların listesini göster.</p>
+                                <button class="btn btn-primary" onclick="showActiveUsers()">
+                                    <i class="fas fa-eye"></i> Kullanıcıları Göster
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== LOGS PANEL ==================== -->
+                <div class="panel" id="logs">
+                    <div class="section-card">
+                        <h2><i class="fas fa-history"></i> Log Kayıtları</h2>
+                        
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i>
+                            Botun son 50 işlemi burada görünür. Veriler otomatik güncellenir.
+                        </div>
+                        
+                        <div class="logs-container">
+                            <div class="logs-header">
+                                <h3 style="margin: 0; font-size: 16px;">📜 Son İşlemler</h3>
+                                <div class="logs-filters">
+                                    <button class="log-filter active" data-type="all" onclick="filterLogs('all', this)">Tümü</button>
+                                    <button class="log-filter" data-type="info" onclick="filterLogs('info', this)">Bilgi</button>
+                                    <button class="log-filter" data-type="success" onclick="filterLogs('success', this)">Başarılı</button>
+                                    <button class="log-filter" data-type="warning" onclick="filterLogs('warning', this)">Uyarı</button>
+                                    <button class="log-filter" data-type="error" onclick="filterLogs('error', this)">Hata</button>
+                                </div>
+                            </div>
+                            <div class="logs-list" id="logsList">
+                                <p style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                    <i class="fas fa-spinner fa-spin"></i> Loglar yükleniyor...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
 
-<!-- ==================== SERVER MANAGEMENT PANEL ==================== -->
-<div class="panel" id="servers">
-    <div class="section-card">
-        <h2><i class="fas fa-server"></i> Sunucu Yönetimi</h2>
-        
-        <div class="help-text">
-            <i class="fas fa-info-circle"></i>
-            Botun bulunduğu tüm sunucuları görüntüle, ara ve yönet.
-        </div>
-
-        <!-- Arama ve Filtre -->
-        <div class="server-controls" style="margin-bottom: 20px; display: flex; gap: 15px;">
-            <input type="text" id="serverSearchInput" class="admin-input" placeholder="🔍 Sunucu ara..." style="flex: 1;">
-            <select id="serverSortSelect" class="admin-input" style="width: 200px;">
-                <option value="members">Üye Sayısı</option>
-                <option value="name">İsim (A-Z)</option>
-                <option value="joinDate">Katılım Tarihi</option>
-            </select>
-        </div>
-
-        <!-- Sunucu Listesi -->
-        <div id="serversList" class="servers-grid">
-            <p style="text-align: center; color: var(--text-muted); padding: 40px;">
-                <i class="fas fa-spinner fa-spin"></i> Sunucular yükleniyor...
-            </p>
-        </div>
-    </div>
-</div>
-
-<!-- ==================== ECONOMY PANEL ==================== -->
-<div class="panel" id="economy">
-    <div class="section-card">
-        <h2><i class="fas fa-coins"></i> Ekonomi Yönetimi</h2>
-        
-        <div class="help-text">
-            <i class="fas fa-info-circle"></i>
-            Kullanıcı bakiyelerini yönet, toplu işlemler yap ve ekonomi istatistiklerini gör.
-        </div>
-
-        <!-- Ekonomi Stats -->
-        <div class="stats-dashboard" style="margin-bottom: 30px;">
-            <div class="stat-card-admin">
-                <div class="stat-icon" style="background: rgba(254, 231, 92, 0.2); color: #FEE75C;">
-                    <i class="fas fa-wallet"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value" id="totalMoney">0</span>
-                    <span class="stat-label">Toplam Para</span>
-                </div>
-            </div>
-            <div class="stat-card-admin">
-                <div class="stat-icon" style="background: rgba(87, 242, 135, 0.2); color: #57F287;">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value" id="activeEconomyUsers">0</span>
-                    <span class="stat-label">Aktif Kullanıcı</span>
-                </div>
-            </div>
-            <div class="stat-card-admin">
-                <div class="stat-icon" style="background: rgba(88, 101, 242, 0.2); color: #5865F2;">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value" id="currentInterest">2.5%</span>
-                    <span class="stat-label">Faiz Oranı</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Hızlı İşlemler -->
-        <div class="quick-actions" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px;">
-            <div class="action-card" onclick="showEconomyModal('add')">
-                <i class="fas fa-plus-circle" style="color: #57F287;"></i>
-                <span>Para Ekle</span>
-            </div>
-            <div class="action-card" onclick="showEconomyModal('remove')">
-                <i class="fas fa-minus-circle" style="color: #ED4245;"></i>
-                <span>Para Sil</span>
-            </div>
-            <div class="action-card" onclick="showEconomyModal('reset')">
-                <i class="fas fa-redo" style="color: #FEE75C;"></i>
-                <span>Kullanıcı Sıfırla</span>
-            </div>
-            <div class="action-card" onclick="showInterestModal()">
-                <i class="fas fa-percentage" style="color: #5865F2;"></i>
-                <span>Faiz Ayarla</span>
-            </div>
-        </div>
-
-        <!-- En Zengin Kullanıcılar -->
-        <h3 style="margin-bottom: 15px;"><i class="fas fa-trophy"></i> En Zengin Kullanıcılar</h3>
-        <div id="richestUsers" class="leaderboard-list">
-            <p style="text-align: center; color: var(--text-muted); padding: 20px;">Yükleniyor...</p>
-        </div>
-    </div>
-</div>
-
-<!-- ==================== MESSAGING PANEL ==================== -->
-<div class="panel" id="messaging">
-    <div class="section-card">
-        <h2><i class="fas fa-paper-plane"></i> Mesajlaşma & Duyurular</h2>
-        
-        <div class="help-text">
-            <i class="fas fa-exclamation-triangle" style="color: #FEE75C;"></i>
-            <strong>DİKKAT:</strong> Toplu mesajlar Discord'un rate limitine takılabilir. Dikkatli kullan!
-        </div>
-
-        <!-- Mesaj Türü Seçimi -->
-        <div class="message-type-selector" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;">
-            <div class="message-type-card active" data-type="announcement" onclick="selectMessageType('announcement')">
-                <i class="fas fa-bullhorn"></i>
-                <span>Tüm Sunuculara Duyuru</span>
-            </div>
-            <div class="message-type-card" data-type="dm" onclick="selectMessageType('dm')">
-                <i class="fas fa-envelope"></i>
-                <span>Kullanıcıya DM</span>
-            </div>
-            <div class="message-type-card" data-type="server" onclick="selectMessageType('server')">
-                <i class="fas fa-server"></i>
-                <span>Belirli Sunucuya</span>
-            </div>
-        </div>
-
-        <!-- Mesaj Formu -->
-        <div id="messageForm">
-            <!-- Hedef Seçimi (DM/Server için) -->
-            <div id="targetSelector" style="display: none; margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 10px; color: var(--text-secondary);">
-                    <i class="fas fa-crosshairs"></i> Hedef Seç
-                </label>
-                <input type="text" id="targetId" class="admin-input" placeholder="Kullanıcı ID veya Sunucu ID">
-            </div>
-
-            <!-- Embed Oluşturucu -->
-            <div class="embed-builder">
-                <h3><i class="fas fa-palette"></i> Mesaj Tasarımı</h3>
-                
-                <div class="form-group">
-                    <label>📌 Başlık</label>
-                    <input type="text" id="embedTitle" class="admin-input" placeholder="Duyuru Başlığı">
-                </div>
-
-                <div class="form-group">
-                    <label>📝 Açıklama</label>
-                    <textarea id="embedDescription" class="admin-input admin-textarea" rows="5" placeholder="Mesaj içeriği..."></textarea>
-                </div>
-
-                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div>
-                        <label>🎨 Renk</label>
-                        <input type="color" id="embedColor" value="#5865F2" style="width: 100%; height: 50px; border-radius: 8px;">
-                    </div>
-                    <div>
-                        <label>🖼️ Thumbnail URL</label>
-                        <input type="text" id="embedThumbnail" class="admin-input" placeholder="https://...">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>🔗 Footer</label>
-                    <input type="text" id="embedFooter" class="admin-input" placeholder="WOWSY Bot • 2024">
-                </div>
-
-                <!-- Önizleme -->
-                <div class="embed-preview" id="embedPreview" style="margin-top: 20px;">
-                    <!-- Dinamik olarak doldurulacak -->
-                </div>
-
-                <button class="btn btn-primary btn-lg" style="width: 100%; margin-top: 20px;" onclick="sendMessage()">
-                    <i class="fas fa-paper-plane"></i> Mesajı Gönder
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ==================== TOOLS PANEL ==================== -->
-<div class="panel" id="tools">
-    <div class="section-card">
-        <h2><i class="fas fa-tools"></i> Bot Araçları</h2>
-        
-        <div class="tools-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-            
-            <!-- Durum Değiştir -->
-            <div class="tool-card">
-                <h3><i class="fas fa-signal"></i> Bot Durumu</h3>
-                <select id="botStatusType" class="admin-input" style="margin-bottom: 10px;">
-                    <option value="online">🟢 Çevrimiçi</option>
-                    <option value="idle">🟡 Boşta</option>
-                    <option value="dnd">🔴 Rahatsız Etmeyin</option>
-                    <option value="invisible">⚫ Görünmez</option>
-                </select>
-                <input type="text" id="botStatusText" class="admin-input" placeholder="Durum mesajı..." style="margin-bottom: 10px;">
-                <select id="botActivityType" class="admin-input" style="margin-bottom: 10px;">
-                    <option value="PLAYING">Oynuyor</option>
-                    <option value="WATCHING">İzliyor</option>
-                    <option value="LISTENING">Dinliyor</option>
-                    <option value="COMPETING">Yarışıyor</option>
-                </select>
-                <button class="btn btn-primary" onclick="updateBotStatus()">
-                    <i class="fas fa-save"></i> Durumu Güncelle
-                </button>
-            </div>
-
-            <!-- Patron Modu -->
-            <div class="tool-card">
-                <h3><i class="fas fa-crown"></i> Patron Modu</h3>
-                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">
-                    Tüm komutlar sadece bot sahibine özel olur
-                </p>
-                <button class="btn btn-primary" id="patronModeBtn" onclick="togglePatronMode()">
-                    <i class="fas fa-toggle-off"></i> Patron Modunu Aç
-                </button>
-            </div>
-
-            <!-- Gizli Mod -->
-            <div class="tool-card">
-                <h3><i class="fas fa-user-secret"></i> Gizli Mod</h3>
-                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">
-                    Bot görünmez olur, sadece sahibi kullanabilir
-                </p>
-                <button class="btn btn-primary" id="stealthModeBtn" onclick="toggleStealthMode()">
-                    <i class="fas fa-toggle-off"></i> Gizli Modu Aç
-                </button>
-            </div>
-
-            <!-- Fake Mesaj -->
-            <div class="tool-card">
-                <h3><i class="fas fa-mask"></i> Fake Mesaj</h3>
-                <input type="text" id="fakeUserId" class="admin-input" placeholder="Kullanıcı ID" style="margin-bottom: 10px;">
-                <textarea id="fakeMessage" class="admin-input admin-textarea" rows="3" placeholder="Sahte mesaj..."></textarea>
-                <button class="btn btn-primary" onclick="sendFakeMessage()">
-                    <i class="fas fa-paper-plane"></i> Gönder
-                </button>
-            </div>
-
-            <!-- Günlük Rapor -->
-            <div class="tool-card">
-                <h3><i class="fas fa-file-alt"></i> Günlük Rapor</h3>
-                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">
-                    Son 24 saatin detaylı istatistikleri
-                </p>
-                <button class="btn btn-primary" onclick="generateDailyReport()">
-                    <i class="fas fa-download"></i> Rapor Oluştur
-                </button>
-            </div>
-
-            <!-- Aktif Kullanıcılar -->
-            <div class="tool-card">
-                <h3><i class="fas fa-users"></i> Aktif Kullanıcılar</h3>
-                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">
-                    Son 1 saatte aktif olan kullanıcılar
-                </p>
-                <button class="btn btn-primary" onclick="showActiveUsers()">
-                    <i class="fas fa-eye"></i> Kullanıcıları Göster
-                </button>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-    <!-- ==================== CATEGORY MODAL (Gelişmiş) ==================== -->
+    <!-- ==================== CATEGORY MODAL ==================== -->
     <div class="modal-backdrop" id="categoryModal">
         <div class="modal-box">
             <h3 class="modal-title" id="categoryModalTitle"><i class="fas fa-folder-plus"></i> Yeni Kategori Ekle</h3>
@@ -860,7 +704,7 @@
         </div>
     </div>
 
-    <!-- ==================== COMMAND MODAL (Gelişmiş) ==================== -->
+    <!-- ==================== COMMAND MODAL ==================== -->
     <div class="modal-backdrop" id="commandModal">
         <div class="modal-box">
             <h3 class="modal-title" id="commandModalTitle"><i class="fas fa-terminal"></i> Komut Ekle</h3>
@@ -921,10 +765,10 @@
         </div>
     </div>
 
-    <!-- Toast Container -->
+    <!-- ==================== TOAST CONTAINER ==================== -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Firebase SDK -->
+    <!-- ==================== SCRIPTS ==================== -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
