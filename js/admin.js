@@ -10,6 +10,81 @@ let openCategories = [];
 let selectedMessageType = 'announcement';
 
 // ========================================
+// YARDIMCI FONKSİYONLAR (EN BAŞTA TANIMLA)
+// ========================================
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text || '';
+    return div.innerHTML;
+}
+
+function hexToRgba(hex, alpha = 1) {
+    if (!hex) return `rgba(88, 101, 242, ${alpha})`;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function turkishToSlug(text) {
+    return text.toLowerCase()
+        .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+        .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
+        .replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+function formatNumber(num) {
+    return new Intl.NumberFormat('tr-TR').format(num || 0);
+}
+
+function formatMoney(amount) {
+    return new Intl.NumberFormat('tr-TR').format(amount || 0);
+}
+
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+    };
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <i class="fas ${icons[type]} toast-icon"></i>
+        <span>${message}</span>
+    `;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Log ekleme fonksiyonu
+window.addLog = async function(type, message, extra = {}) {
+    try {
+        await db.collection('logs').add({
+            type,
+            message,
+            ...extra,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    } catch (error) {
+        console.error('Log kaydetme hatası:', error);
+    }
+}
+
+
+// ========================================
 // AUTH & GİRİŞ SİSTEMİ
 // ========================================
 
@@ -19,8 +94,8 @@ auth.onAuthStateChanged(user => {
     
     if (user) {
         console.log('✅ Giriş yapıldı:', user.email);
-        loginScreen.style.display = 'none';
-        adminDashboard.style.display = 'flex';
+        if (loginScreen) loginScreen.style.display = 'none';
+        if (adminDashboard) adminDashboard.style.display = 'flex';
         
         // Admin ismini güncelle
         const adminName = document.querySelector('.admin-name');
@@ -32,86 +107,99 @@ auth.onAuthStateChanged(user => {
         checkFirebaseSetup();
     } else {
         console.log('❌ Giriş yok');
-        loginScreen.style.display = 'flex';
-        adminDashboard.style.display = 'none';
+        if (loginScreen) loginScreen.style.display = 'flex';
+        if (adminDashboard) adminDashboard.style.display = 'none';
     }
 });
 
 // Login Form
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    const errorEl = document.getElementById('loginError');
-    
-    errorEl.textContent = '';
-    
-    try {
-        await auth.signInWithEmailAndPassword(email, password);
-        showToast('✅ Giriş başarılı!', 'success');
-    } catch (error) {
-        console.error('Login hatası:', error);
+const loginForm = document.getElementById('loginForm');
+if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        const errorMessages = {
-            'auth/user-not-found': 'Kullanıcı bulunamadı!',
-            'auth/wrong-password': 'Yanlış şifre!',
-            'auth/invalid-email': 'Geçersiz email!',
-            'auth/too-many-requests': 'Çok fazla deneme! Biraz bekle.'
-        };
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const errorEl = document.getElementById('loginError');
         
-        errorEl.textContent = errorMessages[error.code] || 'Giriş başarısız!';
-    }
-});
+        if (errorEl) errorEl.textContent = '';
+        
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+            showToast('✅ Giriş başarılı!', 'success');
+        } catch (error) {
+            console.error('Login hatası:', error);
+            
+            const errorMessages = {
+                'auth/user-not-found': 'Kullanıcı bulunamadı!',
+                'auth/wrong-password': 'Yanlış şifre!',
+                'auth/invalid-email': 'Geçersiz email!',
+                'auth/too-many-requests': 'Çok fazla deneme! Biraz bekle.'
+            };
+            
+            if (errorEl) errorEl.textContent = errorMessages[error.code] || 'Giriş başarısız!';
+        }
+    });
+}
 
 // Logout
-document.getElementById('logoutBtn').addEventListener('click', () => {
-    auth.signOut();
-    showToast('👋 Çıkış yapıldı', 'info');
-});
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        auth.signOut();
+        showToast('👋 Çıkış yapıldı', 'info');
+    });
+}
 
 
 // ========================================
 // SIDEBAR NAVİGASYON
 // ========================================
 
-document.querySelectorAll('.sidebar-link').forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        const panelId = link.dataset.panel;
-        
-        // Sidebar aktif
-        document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-        
-        // Panel aktif
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        const panel = document.getElementById(panelId);
-        if (panel) {
-            panel.classList.add('active');
-        }
-        
-        // Panel başlığı güncelle
-        const titles = {
-            'homepage': 'Ana Sayfa Ayarları',
-            'commands': 'Komut Yönetimi',
-            'stats': 'Bot İstatistikleri',
-            'servers': 'Sunucu Yönetimi',
-            'economy': 'Ekonomi Yönetimi',
-            'messaging': 'Mesajlaşma & Duyurular',
-            'tools': 'Bot Araçları',
-            'logs': 'Log Kayıtları'
-        };
-        
-        document.getElementById('panelTitle').textContent = titles[panelId] || 'Admin Panel';
-        
-        // Panel açıldığında veri yükle
-        if (panelId === 'servers') loadServerManagement();
-        if (panelId === 'economy') loadEconomyPanel();
-        if (panelId === 'messaging') updateEmbedPreview();
-        if (panelId === 'logs') loadLogs();
-    });
+document.addEventListener('DOMContentLoaded', () => {
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    
+    if (sidebarLinks && sidebarLinks.length > 0) {
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                const panelId = link.dataset.panel;
+                
+                // Sidebar aktif
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Panel aktif
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                const panel = document.getElementById(panelId);
+                if (panel) {
+                    panel.classList.add('active');
+                }
+                
+                // Panel başlığı güncelle
+                const titles = {
+                    'homepage': 'Ana Sayfa Ayarları',
+                    'commands': 'Komut Yönetimi',
+                    'stats': 'Bot İstatistikleri',
+                    'servers': 'Sunucu Yönetimi',
+                    'economy': 'Ekonomi Yönetimi',
+                    'messaging': 'Mesajlaşma & Duyurular',
+                    'tools': 'Bot Araçları',
+                    'logs': 'Log Kayıtları'
+                };
+                
+                const titleEl = document.getElementById('panelTitle');
+                if (titleEl) titleEl.textContent = titles[panelId] || 'Admin Panel';
+                
+                // Panel açıldığında veri yükle
+                if (panelId === 'servers') loadServerManagement();
+                if (panelId === 'economy') loadEconomyPanel();
+                if (panelId === 'messaging') updateEmbedPreview();
+                if (panelId === 'logs') loadLogs();
+            });
+        });
+    }
 });
 
 
@@ -131,14 +219,11 @@ function loadHomepageData() {
     homepageRef.onSnapshot((doc) => {
         const data = doc.exists ? doc.data() : {};
         
-        document.getElementById('botName').value = data.botName || '';
-        document.getElementById('logoUrl').value = data.logoUrl || '';
-        document.getElementById('bannerUrl').value = data.bannerUrl || '';
-        document.getElementById('inviteLink').value = data.inviteLink || '';
-        document.getElementById('heroTitle').value = data.heroTitle || '';
-        document.getElementById('heroHighlight').value = data.heroHighlight || '';
-        document.getElementById('heroDescription').value = data.heroDescription || '';
-        document.getElementById('badgeText').value = data.badgeText || '';
+        const fields = ['botName', 'logoUrl', 'bannerUrl', 'inviteLink', 'heroTitle', 'heroHighlight', 'heroDescription', 'badgeText'];
+        fields.forEach(field => {
+            const el = document.getElementById(field);
+            if (el) el.value = data[field] || '';
+        });
         
         updatePreview('logoUrl', 'logoPreview', 'logoPreviewImg');
         updatePreview('bannerUrl', 'bannerPreview', 'bannerPreviewImg');
@@ -148,29 +233,32 @@ function loadHomepageData() {
 }
 
 function updatePreview(inputId, previewId, imgId) {
-    const url = document.getElementById(inputId)?.value;
+    const input = document.getElementById(inputId);
     const preview = document.getElementById(previewId);
     const img = document.getElementById(imgId);
     
-    if (url && preview && img) {
-        preview.style.display = 'block';
-        img.src = url;
-    } else if (preview) {
-        preview.style.display = 'none';
+    if (input && preview && img) {
+        const url = input.value;
+        if (url) {
+            preview.style.display = 'block';
+            img.src = url;
+        } else {
+            preview.style.display = 'none';
+        }
     }
 }
 
 // Ana Sayfa Kaydet
 window.saveHomepageData = async function() {
     const data = {
-        botName: document.getElementById('botName').value,
-        logoUrl: document.getElementById('logoUrl').value,
-        bannerUrl: document.getElementById('bannerUrl').value,
-        inviteLink: document.getElementById('inviteLink').value,
-        heroTitle: document.getElementById('heroTitle').value,
-        heroHighlight: document.getElementById('heroHighlight').value,
-        heroDescription: document.getElementById('heroDescription').value,
-        badgeText: document.getElementById('badgeText').value
+        botName: document.getElementById('botName')?.value || '',
+        logoUrl: document.getElementById('logoUrl')?.value || '',
+        bannerUrl: document.getElementById('bannerUrl')?.value || '',
+        inviteLink: document.getElementById('inviteLink')?.value || '',
+        heroTitle: document.getElementById('heroTitle')?.value || '',
+        heroHighlight: document.getElementById('heroHighlight')?.value || '',
+        heroDescription: document.getElementById('heroDescription')?.value || '',
+        badgeText: document.getElementById('badgeText')?.value || ''
     };
     
     try {
@@ -187,10 +275,13 @@ function loadBotStatus() {
     statsRef.onSnapshot((doc) => {
         const status = doc.exists ? doc.data() : null;
         const statusEl = document.getElementById('botStatus');
-        const dot = statusEl?.querySelector('.status-dot');
-        const text = statusEl?.querySelector('span:last-child');
         
-        if (!statusEl || !dot || !text) return;
+        if (!statusEl) return;
+        
+        const dot = statusEl.querySelector('.status-dot');
+        const text = statusEl.querySelector('span:last-child');
+        
+        if (!dot || !text) return;
         
         if (status && status.online) {
             dot.className = 'status-dot online';
@@ -213,14 +304,20 @@ function loadStats() {
     statsRef.onSnapshot((doc) => {
         const data = doc.exists ? doc.data() : {};
         
-        document.getElementById('adminTotalServers').textContent = formatNumber(data.server_count || 0);
-        document.getElementById('adminTotalUsers').textContent = formatNumber(data.user_count || 0);
-        document.getElementById('adminActivePlayers').textContent = data.active_players || 0;
-        document.getElementById('adminUptime').textContent = data.uptime || '0s';
+        const serverEl = document.getElementById('adminTotalServers');
+        const userEl = document.getElementById('adminTotalUsers');
+        const playerEl = document.getElementById('adminActivePlayers');
+        const uptimeEl = document.getElementById('adminUptime');
+        const updateEl = document.getElementById('lastUpdate');
         
-        if (data.last_updated) {
+        if (serverEl) serverEl.textContent = formatNumber(data.server_count);
+        if (userEl) userEl.textContent = formatNumber(data.user_count);
+        if (playerEl) playerEl.textContent = data.active_players || 0;
+        if (uptimeEl) uptimeEl.textContent = data.uptime || '0s';
+        
+        if (updateEl && data.last_updated) {
             const date = data.last_updated.toDate ? data.last_updated.toDate() : new Date(data.last_updated);
-            document.getElementById('lastUpdate').textContent = date.toLocaleString('tr-TR');
+            updateEl.textContent = date.toLocaleString('tr-TR');
         }
     }, (error) => {
         console.error('Stats hatası:', error);
@@ -237,6 +334,7 @@ function loadCommands() {
     
     commandsRef.onSnapshot((snapshot) => {
         const container = document.getElementById('commandsList');
+        if (!container) return;
         
         if (snapshot.empty) {
             container.innerHTML = `
@@ -282,10 +380,10 @@ function loadCommands() {
                         </div>
                     </div>
                     <div class="category-actions">
-                        <button class="btn-icon" onclick="moveCategoryUp('${catKey}')" title="Yukarı Taşı" ${index === 0 ? 'disabled' : ''}>
+                        <button class="btn-icon" onclick="moveCategoryUp('${catKey}')" title="Yukarı" ${index === 0 ? 'disabled' : ''}>
                             <i class="fas fa-arrow-up"></i>
                         </button>
-                        <button class="btn-icon" onclick="moveCategoryDown('${catKey}')" title="Aşağı Taşı" ${index === sortedCategories.length - 1 ? 'disabled' : ''}>
+                        <button class="btn-icon" onclick="moveCategoryDown('${catKey}')" title="Aşağı" ${index === sortedCategories.length - 1 ? 'disabled' : ''}>
                             <i class="fas fa-arrow-down"></i>
                         </button>
                         <button class="btn-icon" onclick="editCategory('${catKey}')" title="Düzenle">
@@ -313,6 +411,10 @@ function loadCommands() {
         });
     }, (error) => {
         console.error('Komut yükleme hatası:', error);
+        const container = document.getElementById('commandsList');
+        if (container) {
+            container.innerHTML = `<p style="color: var(--red); text-align: center; padding: 20px;">❌ Yükleme hatası: ${error.message}</p>`;
+        }
     });
 }
 
@@ -347,6 +449,8 @@ function renderCommandsList(catKey, commands) {
 window.toggleCategory = function(catKey) {
     const content = document.getElementById(`cat-${catKey}`);
     const header = document.querySelector(`[data-cat="${catKey}"]`);
+    
+    if (!content || !header) return;
     
     if (content.classList.contains('open')) {
         content.classList.remove('open');
@@ -419,23 +523,21 @@ window.showCategoryModal = function(editKey = null) {
     
     modal.classList.add('active');
     
-    if (editingKeyInput) {
-        editingKeyInput.value = editKey || '';
-    }
+    if (editingKeyInput) editingKeyInput.value = editKey || '';
     
     if (editKey && allCommands[editKey]) {
-        title.innerHTML = '<i class="fas fa-edit"></i> Kategori Düzenle';
+        if (title) title.innerHTML = '<i class="fas fa-edit"></i> Kategori Düzenle';
         document.getElementById('newCategoryName').value = allCommands[editKey].name || '';
         document.getElementById('newCategoryIcon').value = allCommands[editKey].icon || 'fa-terminal';
         document.getElementById('newCategoryColor').value = allCommands[editKey].color || '#5865F2';
     } else {
-        title.innerHTML = '<i class="fas fa-folder-plus"></i> Yeni Kategori Ekle';
+        if (title) title.innerHTML = '<i class="fas fa-folder-plus"></i> Yeni Kategori Ekle';
         document.getElementById('newCategoryName').value = '';
         document.getElementById('newCategoryIcon').value = 'fa-terminal';
         document.getElementById('newCategoryColor').value = '#5865F2';
     }
     
-    setTimeout(() => document.getElementById('newCategoryName').focus(), 100);
+    setTimeout(() => document.getElementById('newCategoryName')?.focus(), 100);
 }
 
 window.editCategory = function(catKey) {
@@ -448,9 +550,9 @@ window.closeCategoryModal = function() {
 
 window.saveCategory = async function() {
     const editKey = document.getElementById('editingCategoryKey')?.value || '';
-    const name = document.getElementById('newCategoryName').value.trim();
-    const icon = document.getElementById('newCategoryIcon').value.trim() || 'fa-terminal';
-    const color = document.getElementById('newCategoryColor').value;
+    const name = document.getElementById('newCategoryName')?.value.trim();
+    const icon = document.getElementById('newCategoryIcon')?.value.trim() || 'fa-terminal';
+    const color = document.getElementById('newCategoryColor')?.value;
     
     if (!name) {
         showToast('❌ Kategori adı gerekli!', 'error');
@@ -461,7 +563,6 @@ window.saveCategory = async function() {
         if (editKey) {
             await commandsRef.doc(editKey).update({ name, icon, color });
             showToast('✅ Kategori güncellendi!', 'success');
-            addLog('success', `Kategori güncellendi: ${name}`);
         } else {
             const catKey = turkishToSlug(name);
             
@@ -478,7 +579,6 @@ window.saveCategory = async function() {
                 commands: {}
             });
             showToast('✅ Kategori eklendi!', 'success');
-            addLog('success', `Yeni kategori eklendi: ${name}`);
         }
         
         closeCategoryModal();
@@ -500,7 +600,6 @@ window.deleteCategory = async function(catKey) {
     try {
         await commandsRef.doc(catKey).delete();
         showToast('✅ Kategori silindi!', 'success');
-        addLog('warning', `Kategori silindi: ${category?.name}`);
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
     }
@@ -523,7 +622,7 @@ window.showCommandModal = function(catKey, cmdKey = null) {
     
     if (cmdKey && allCommands[catKey]?.commands?.[cmdKey]) {
         const cmd = allCommands[catKey].commands[cmdKey];
-        title.innerHTML = '<i class="fas fa-edit"></i> Komutu Düzenle';
+        if (title) title.innerHTML = '<i class="fas fa-edit"></i> Komutu Düzenle';
         document.getElementById('cmdName').value = cmd.name || '';
         document.getElementById('cmdShortDesc').value = cmd.shortDesc || '';
         document.getElementById('cmdDescription').value = cmd.description || '';
@@ -531,7 +630,7 @@ window.showCommandModal = function(catKey, cmdKey = null) {
         document.getElementById('cmdExample').value = cmd.example || '';
         document.getElementById('cmdPermission').value = cmd.permission || 'Herkes';
     } else {
-        title.innerHTML = '<i class="fas fa-plus"></i> Yeni Komut Ekle';
+        if (title) title.innerHTML = '<i class="fas fa-plus"></i> Yeni Komut Ekle';
         document.getElementById('cmdName').value = '';
         document.getElementById('cmdShortDesc').value = '';
         document.getElementById('cmdDescription').value = '';
@@ -540,7 +639,7 @@ window.showCommandModal = function(catKey, cmdKey = null) {
         document.getElementById('cmdPermission').value = 'Herkes';
     }
     
-    setTimeout(() => document.getElementById('cmdName').focus(), 100);
+    setTimeout(() => document.getElementById('cmdName')?.focus(), 100);
 }
 
 window.editCommand = function(catKey, cmdKey) {
@@ -552,15 +651,15 @@ window.closeCommandModal = function() {
 }
 
 window.saveCommand = async function() {
-    const catKey = document.getElementById('editCategoryKey').value;
-    const oldCmdKey = document.getElementById('editCommandKey').value;
+    const catKey = document.getElementById('editCategoryKey')?.value;
+    const oldCmdKey = document.getElementById('editCommandKey')?.value;
     
-    const name = document.getElementById('cmdName').value.trim();
-    const shortDesc = document.getElementById('cmdShortDesc').value.trim();
-    const description = document.getElementById('cmdDescription').value.trim();
-    const usage = document.getElementById('cmdUsage').value.trim();
-    const example = document.getElementById('cmdExample').value.trim();
-    const permission = document.getElementById('cmdPermission').value;
+    const name = document.getElementById('cmdName')?.value.trim();
+    const shortDesc = document.getElementById('cmdShortDesc')?.value.trim();
+    const description = document.getElementById('cmdDescription')?.value.trim();
+    const usage = document.getElementById('cmdUsage')?.value.trim();
+    const example = document.getElementById('cmdExample')?.value.trim();
+    const permission = document.getElementById('cmdPermission')?.value;
     
     if (!name) {
         showToast('❌ Komut adı gerekli!', 'error');
@@ -591,7 +690,6 @@ window.saveCommand = async function() {
         
         closeCommandModal();
         showToast(oldCmdKey ? '✅ Komut güncellendi!' : '✅ Komut eklendi!', 'success');
-        addLog('success', `Komut ${oldCmdKey ? 'güncellendi' : 'eklendi'}: /${name}`);
         
         if (!openCategories.includes(catKey)) {
             openCategories.push(catKey);
@@ -613,7 +711,6 @@ window.deleteCommand = async function(catKey, cmdKey) {
         await commandsRef.doc(catKey).update({ commands: currentCommands });
         
         showToast('✅ Komut silindi!', 'success');
-        addLog('warning', `Komut silindi: /${cmd?.name}`);
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
     }
@@ -627,10 +724,10 @@ window.deleteCommand = async function(catKey, cmdKey) {
 function loadServerManagement() {
     console.log('🖥️ Sunucu yönetimi yükleniyor...');
     
+    const serversGrid = document.getElementById('serversList');
+    if (!serversGrid) return;
+    
     db.collection('servers').onSnapshot((snapshot) => {
-        const serversGrid = document.getElementById('serversList');
-        if (!serversGrid) return;
-        
         if (snapshot.empty) {
             serversGrid.innerHTML = `
                 <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
@@ -650,7 +747,8 @@ function loadServerManagement() {
         });
         
         // Sıralama
-        const sortType = document.getElementById('serverSortSelect')?.value || 'members';
+        const sortEl = document.getElementById('serverSortSelect');
+        const sortType = sortEl ? sortEl.value : 'members';
         servers.sort((a, b) => {
             if (sortType === 'members') return (b.memberCount || 0) - (a.memberCount || 0);
             if (sortType === 'name') return (a.name || '').localeCompare(b.name || '');
@@ -678,7 +776,7 @@ function loadServerManagement() {
                 <div class="server-stats">
                     <div class="server-stat">
                         <i class="fas fa-users"></i>
-                        <span>${formatNumber(server.memberCount || 0)} üye</span>
+                        <span>${formatNumber(server.memberCount)} üye</span>
                     </div>
                     <div class="server-stat">
                         <i class="fas fa-hashtag"></i>
@@ -697,6 +795,9 @@ function loadServerManagement() {
             
             serversGrid.appendChild(card);
         });
+    }, (error) => {
+        console.error('Sunucu yükleme hatası:', error);
+        serversGrid.innerHTML = `<p style="color: var(--red); text-align: center; padding: 20px;">❌ Yükleme hatası</p>`;
     });
 }
 
@@ -705,24 +806,33 @@ window.viewServerDetails = function(serverId) {
 }
 
 window.sendMessageToServer = function(serverId) {
-    document.querySelector('[data-panel="messaging"]')?.click();
+    const msgLink = document.querySelector('[data-panel="messaging"]');
+    if (msgLink) msgLink.click();
+    
     setTimeout(() => {
         selectMessageType('server');
-        document.getElementById('targetId').value = serverId;
+        const targetEl = document.getElementById('targetId');
+        if (targetEl) targetEl.value = serverId;
     }, 100);
 }
 
 // Sunucu arama
-document.getElementById('serverSearchInput')?.addEventListener('input', (e) => {
-    const search = e.target.value.toLowerCase();
-    document.querySelectorAll('.server-card').forEach(card => {
-        const name = card.querySelector('h4')?.textContent.toLowerCase() || '';
-        const id = card.querySelector('.server-id')?.textContent.toLowerCase() || '';
-        card.style.display = (name.includes(search) || id.includes(search)) ? 'block' : 'none';
+const serverSearchInput = document.getElementById('serverSearchInput');
+if (serverSearchInput) {
+    serverSearchInput.addEventListener('input', (e) => {
+        const search = e.target.value.toLowerCase();
+        document.querySelectorAll('.server-card').forEach(card => {
+            const name = card.querySelector('h4')?.textContent.toLowerCase() || '';
+            const id = card.querySelector('.server-id')?.textContent.toLowerCase() || '';
+            card.style.display = (name.includes(search) || id.includes(search)) ? 'block' : 'none';
+        });
     });
-});
+}
 
-document.getElementById('serverSortSelect')?.addEventListener('change', loadServerManagement);
+const serverSortSelect = document.getElementById('serverSortSelect');
+if (serverSortSelect) {
+    serverSortSelect.addEventListener('change', loadServerManagement);
+}
 
 
 // ========================================
@@ -735,9 +845,16 @@ function loadEconomyPanel() {
     // Ekonomi istatistikleri
     db.collection('economy_stats').doc('global').onSnapshot((doc) => {
         const data = doc.exists ? doc.data() : {};
-        document.getElementById('totalMoney').textContent = formatMoney(data.totalMoney || 0);
-        document.getElementById('activeEconomyUsers').textContent = formatNumber(data.activeUsers || 0);
-        document.getElementById('currentInterest').textContent = (data.interestRate || 2.5) + '%';
+        
+        const totalEl = document.getElementById('totalMoney');
+        const usersEl = document.getElementById('activeEconomyUsers');
+        const interestEl = document.getElementById('currentInterest');
+        
+        if (totalEl) totalEl.textContent = formatMoney(data.totalMoney);
+        if (usersEl) usersEl.textContent = formatNumber(data.activeUsers);
+        if (interestEl) interestEl.textContent = (data.interestRate || 2.5) + '%';
+    }, (error) => {
+        console.error('Ekonomi stats hatası:', error);
     });
     
     // En zengin kullanıcılar
@@ -771,12 +888,14 @@ function loadEconomyPanel() {
                         <div class="user-name">${escapeHtml(user.username || 'Bilinmeyen')}</div>
                         <div class="user-id">${doc.id}</div>
                     </div>
-                    <div class="user-balance">💰 ${formatMoney(user.balance || 0)}</div>
+                    <div class="user-balance">💰 ${formatMoney(user.balance)}</div>
                 `;
                 
                 container.appendChild(item);
                 rank++;
             });
+        }, (error) => {
+            console.error('Leaderboard hatası:', error);
         });
 }
 
@@ -816,7 +935,6 @@ async function modifyBalance(userId, amount) {
         
         const action = amount > 0 ? 'eklendi' : 'silindi';
         showToast(`✅ ${formatMoney(Math.abs(amount))} ${action}!`, 'success');
-        addLog('success', `${userId} kullanıcısına ${formatMoney(amount)} ${action}`);
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
     }
@@ -826,22 +944,19 @@ async function resetUserBalance(userId) {
     try {
         await db.collection('economy').doc(userId).delete();
         showToast('✅ Kullanıcı sıfırlandı!', 'success');
-        addLog('warning', `${userId} ekonomi verileri sıfırlandı`);
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
     }
 }
 
 window.showInterestModal = function() {
-    const currentRate = document.getElementById('currentInterest').textContent;
+    const currentEl = document.getElementById('currentInterest');
+    const currentRate = currentEl ? currentEl.textContent : '2.5%';
     const newRate = parseFloat(prompt(`Yeni faiz oranı (şu an ${currentRate}):`));
     
     if (newRate >= 0) {
-        db.collection('economy_stats').doc('global').update({ interestRate: newRate })
-            .then(() => {
-                showToast(`✅ Faiz oranı ${newRate}% olarak güncellendi!`, 'success');
-                addLog('info', `Faiz oranı ${newRate}% olarak güncellendi`);
-            })
+        db.collection('economy_stats').doc('global').set({ interestRate: newRate }, { merge: true })
+            .then(() => showToast(`✅ Faiz oranı ${newRate}% olarak güncellendi!`, 'success'))
             .catch(error => showToast('❌ Hata: ' + error.message, 'error'));
     }
 }
@@ -861,18 +976,15 @@ window.selectMessageType = function(type) {
     const targetSelector = document.getElementById('targetSelector');
     const targetInput = document.getElementById('targetId');
     
-    if (type === 'announcement') {
-        targetSelector.style.display = 'none';
-    } else {
-        targetSelector.style.display = 'block';
-        targetInput.placeholder = type === 'dm' ? 'Kullanıcı ID' : 'Sunucu ID';
+    if (targetSelector) {
+        if (type === 'announcement') {
+            targetSelector.style.display = 'none';
+        } else {
+            targetSelector.style.display = 'block';
+            if (targetInput) targetInput.placeholder = type === 'dm' ? 'Kullanıcı ID' : 'Sunucu ID';
+        }
     }
 }
-
-// Embed preview güncelleme
-['embedTitle', 'embedDescription', 'embedFooter', 'embedColor', 'embedThumbnail'].forEach(id => {
-    document.getElementById(id)?.addEventListener('input', updateEmbedPreview);
-});
 
 function updateEmbedPreview() {
     const preview = document.getElementById('embedPreview');
@@ -893,12 +1005,18 @@ function updateEmbedPreview() {
     `;
 }
 
+// Embed input listeners
+['embedTitle', 'embedDescription', 'embedFooter', 'embedColor', 'embedThumbnail'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateEmbedPreview);
+});
+
 window.sendMessage = async function() {
-    const title = document.getElementById('embedTitle').value.trim();
-    const description = document.getElementById('embedDescription').value.trim();
-    const color = document.getElementById('embedColor').value;
-    const footer = document.getElementById('embedFooter').value.trim();
-    const thumbnail = document.getElementById('embedThumbnail').value.trim();
+    const title = document.getElementById('embedTitle')?.value.trim();
+    const description = document.getElementById('embedDescription')?.value.trim();
+    const color = document.getElementById('embedColor')?.value;
+    const footer = document.getElementById('embedFooter')?.value.trim();
+    const thumbnail = document.getElementById('embedThumbnail')?.value.trim();
     
     if (!title || !description) {
         showToast('❌ Başlık ve açıklama gerekli!', 'error');
@@ -913,7 +1031,7 @@ window.sendMessage = async function() {
     };
     
     if (selectedMessageType !== 'announcement') {
-        const targetId = document.getElementById('targetId').value.trim();
+        const targetId = document.getElementById('targetId')?.value.trim();
         if (!targetId) {
             showToast('❌ Hedef ID gerekli!', 'error');
             return;
@@ -921,19 +1039,13 @@ window.sendMessage = async function() {
         messageData.targetId = targetId;
     }
     
-    const typeNames = {
-        'announcement': 'TÜM SUNUCULARA',
-        'dm': 'Kullanıcıya DM',
-        'server': 'Sunucuya'
-    };
+    const typeNames = { 'announcement': 'TÜM SUNUCULARA', 'dm': 'Kullanıcıya DM', 'server': 'Sunucuya' };
     
     if (!confirm(`${typeNames[selectedMessageType]} mesaj göndermek istediğine emin misin?`)) return;
     
     try {
         await db.collection('pending_messages').add(messageData);
-        
         showToast('✅ Mesaj kuyruğa eklendi!', 'success');
-        addLog('info', `Mesaj gönderildi: ${selectedMessageType}`);
         
         // Formu temizle
         document.getElementById('embedTitle').value = '';
@@ -952,9 +1064,9 @@ window.sendMessage = async function() {
 // ========================================
 
 window.updateBotStatus = async function() {
-    const statusType = document.getElementById('botStatusType').value;
-    const statusText = document.getElementById('botStatusText').value.trim();
-    const activityType = document.getElementById('botActivityType').value;
+    const statusType = document.getElementById('botStatusType')?.value;
+    const statusText = document.getElementById('botStatusText')?.value.trim();
+    const activityType = document.getElementById('botActivityType')?.value;
     
     if (!statusText) {
         showToast('❌ Durum mesajı gerekli!', 'error');
@@ -970,7 +1082,6 @@ window.updateBotStatus = async function() {
         });
         
         showToast('✅ Bot durumu güncellendi!', 'success');
-        addLog('success', `Bot durumu güncellendi: ${activityType} ${statusText}`);
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
     }
@@ -978,12 +1089,12 @@ window.updateBotStatus = async function() {
 
 window.togglePatronMode = async function() {
     const btn = document.getElementById('patronModeBtn');
+    if (!btn) return;
+    
     const isActive = btn.classList.contains('toggle-active');
     
     try {
-        await db.collection('bot_settings').doc('modes').set({
-            patronMode: !isActive
-        }, { merge: true });
+        await db.collection('bot_settings').doc('modes').set({ patronMode: !isActive }, { merge: true });
         
         btn.classList.toggle('toggle-active');
         btn.innerHTML = isActive 
@@ -991,7 +1102,6 @@ window.togglePatronMode = async function() {
             : '<i class="fas fa-toggle-on"></i> Patron Modu Açık';
         
         showToast(isActive ? '🔓 Patron modu kapatıldı' : '🔒 Patron modu açıldı!', isActive ? 'info' : 'success');
-        addLog('info', `Patron modu ${isActive ? 'kapatıldı' : 'açıldı'}`);
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
     }
@@ -999,12 +1109,12 @@ window.togglePatronMode = async function() {
 
 window.toggleStealthMode = async function() {
     const btn = document.getElementById('stealthModeBtn');
+    if (!btn) return;
+    
     const isActive = btn.classList.contains('toggle-active');
     
     try {
-        await db.collection('bot_settings').doc('modes').set({
-            stealthMode: !isActive
-        }, { merge: true });
+        await db.collection('bot_settings').doc('modes').set({ stealthMode: !isActive }, { merge: true });
         
         btn.classList.toggle('toggle-active');
         btn.innerHTML = isActive 
@@ -1012,15 +1122,14 @@ window.toggleStealthMode = async function() {
             : '<i class="fas fa-toggle-on"></i> Gizli Mod Açık';
         
         showToast(isActive ? '👁️ Gizli mod kapatıldı' : '🥷 Gizli mod açıldı!', isActive ? 'info' : 'success');
-        addLog('info', `Gizli mod ${isActive ? 'kapatıldı' : 'açıldı'}`);
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
     }
 }
 
 window.sendFakeMessage = async function() {
-    const userId = document.getElementById('fakeUserId').value.trim();
-    const message = document.getElementById('fakeMessage').value.trim();
+    const userId = document.getElementById('fakeUserId')?.value.trim();
+    const message = document.getElementById('fakeMessage')?.value.trim();
     
     if (!userId || !message) {
         showToast('❌ Kullanıcı ID ve mesaj gerekli!', 'error');
@@ -1036,7 +1145,6 @@ window.sendFakeMessage = async function() {
         });
         
         showToast('✅ Fake mesaj kuyruğa eklendi!', 'success');
-        addLog('info', `Fake mesaj: ${userId}`);
         
         document.getElementById('fakeUserId').value = '';
         document.getElementById('fakeMessage').value = '';
@@ -1056,7 +1164,6 @@ window.generateDailyReport = async function() {
         });
         
         showToast('✅ Rapor talebi gönderildi!', 'success');
-        addLog('info', 'Günlük rapor talep edildi');
     } catch (error) {
         showToast('❌ Hata: ' + error.message, 'error');
     }
@@ -1074,13 +1181,13 @@ window.showActiveUsers = function() {
 function loadLogs() {
     console.log('📜 Loglar yükleniyor...');
     
+    const logsList = document.getElementById('logsList');
+    if (!logsList) return;
+    
     db.collection('logs')
         .orderBy('timestamp', 'desc')
         .limit(50)
         .onSnapshot((snapshot) => {
-            const logsList = document.getElementById('logsList');
-            if (!logsList) return;
-            
             if (snapshot.empty) {
                 logsList.innerHTML = `
                     <div style="text-align: center; padding: 40px; color: var(--text-muted);">
@@ -1117,13 +1224,15 @@ function loadLogs() {
                         <div class="log-message">${escapeHtml(log.message || 'Log mesajı')}</div>
                         <div class="log-meta">
                             <span>⏰ ${timestamp}</span>
-                            ${log.userId ? `<span>👤 ${log.userId}</span>` : ''}
                         </div>
                     </div>
                 `;
                 
                 logsList.appendChild(item);
             });
+        }, (error) => {
+            console.error('Log yükleme hatası:', error);
+            logsList.innerHTML = `<p style="color: var(--red); text-align: center; padding: 20px;">❌ Log yükleme hatası</p>`;
         });
 }
 
@@ -1134,19 +1243,6 @@ window.filterLogs = function(type, btn) {
     document.querySelectorAll('.log-item').forEach(item => {
         item.style.display = (type === 'all' || item.dataset.type === type) ? 'flex' : 'none';
     });
-}
-
-window.addLog = async function(type, message, extra = {}) {
-    try {
-        await db.collection('logs').add({
-            type,
-            message,
-            ...extra,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-    } catch (error) {
-        console.error('Log kaydetme hatası:', error);
-    }
 }
 
 
@@ -1161,11 +1257,16 @@ async function checkFirebaseSetup() {
             showSetupButton();
         }
     } catch (error) {
+        console.log('Setup kontrol hatası, buton gösteriliyor');
         showSetupButton();
     }
 }
 
 function showSetupButton() {
+    // Önceki buton varsa kaldır
+    const existingBtn = document.getElementById('setupBtn');
+    if (existingBtn) existingBtn.remove();
+    
     const btn = document.createElement('button');
     btn.id = 'setupBtn';
     btn.className = 'btn btn-warning';
@@ -1176,123 +1277,89 @@ function showSetupButton() {
 }
 
 window.initializeFirebase = async function() {
-    if (!confirm('Firebase collections oluşturulsun mu?')) return;
+    if (!confirm('Firebase collections oluşturulsun mu?\n\nBu işlem şunları oluşturacak:\n- bot_settings\n- economy_stats\n- servers (demo)\n- economy (demo)\n- logs')) return;
     
     const btn = document.getElementById('setupBtn');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kuruluyor...';
-    btn.disabled = true;
+    if (btn) {
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kuruluyor...';
+        btn.disabled = true;
+    }
     
     try {
-        // Bot Settings
+        // Bot Settings - Status
         await db.collection('bot_settings').doc('status').set({
             type: 'online',
             text: '150+ Komut',
             activityType: 'PLAYING',
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
+        console.log('✅ bot_settings/status oluşturuldu');
         
+        // Bot Settings - Modes
         await db.collection('bot_settings').doc('modes').set({
             patronMode: false,
             stealthMode: false
         });
+        console.log('✅ bot_settings/modes oluşturuldu');
         
         // Economy Stats
         await db.collection('economy_stats').doc('global').set({
-            totalMoney: 0,
-            activeUsers: 0,
+            totalMoney: 10000,
+            activeUsers: 1,
             interestRate: 2.5
         });
+        console.log('✅ economy_stats oluşturuldu');
         
-        // Demo veriler
+        // Demo Server
         await db.collection('servers').doc('demo').set({
             name: 'Demo Sunucu',
             memberCount: 150,
             channelCount: 12,
             joinedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
+        console.log('✅ servers/demo oluşturuldu');
         
-        await db.collection('economy').doc('demo').set({
+        // Demo Economy User
+        await db.collection('economy').doc('demo_user').set({
             username: 'Demo Kullanıcı',
-            balance: 10000
+            balance: 10000,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
+        console.log('✅ economy/demo_user oluşturuldu');
         
-        await addLog('success', 'Firebase kurulumu tamamlandı');
+        // İlk Log
+        await db.collection('logs').add({
+            type: 'success',
+            message: 'Firebase kurulumu tamamlandı!',
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.log('✅ logs oluşturuldu');
         
         showToast('🎉 Firebase kurulumu tamamlandı!', 'success');
-        btn.innerHTML = '<i class="fas fa-check"></i> Kurulum Tamam';
         
-        setTimeout(() => btn.remove(), 2000);
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-check"></i> Kurulum Tamam';
+            btn.style.background = 'linear-gradient(135deg, #57F287, #43b581)';
+            setTimeout(() => btn.remove(), 2000);
+        }
+        
+        // Sayfayı yeniden yükle
+        setTimeout(() => location.reload(), 2500);
+        
     } catch (error) {
+        console.error('Kurulum hatası:', error);
         showToast('❌ Hata: ' + error.message, 'error');
-        btn.innerHTML = '<i class="fas fa-redo"></i> Tekrar Dene';
-        btn.disabled = false;
+        
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-redo"></i> Tekrar Dene';
+            btn.disabled = false;
+        }
     }
 }
 
 
 // ========================================
-// YARDIMCI FONKSİYONLAR
-// ========================================
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text || '';
-    return div.innerHTML;
-}
-
-function hexToRgba(hex, alpha = 1) {
-    if (!hex) return `rgba(88, 101, 242, ${alpha})`;
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-function turkishToSlug(text) {
-    return text.toLowerCase()
-        .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
-        .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
-        .replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-}
-
-function formatNumber(num) {
-    return new Intl.NumberFormat('tr-TR').format(num);
-}
-
-function formatMoney(amount) {
-    return new Intl.NumberFormat('tr-TR').format(amount);
-}
-
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toastContainer');
-    if (!container) return;
-    
-    const icons = {
-        success: 'fa-check-circle',
-        error: 'fa-exclamation-circle',
-        warning: 'fa-exclamation-triangle',
-        info: 'fa-info-circle'
-    };
-    
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <i class="fas ${icons[type]} toast-icon"></i>
-        <span>${message}</span>
-    `;
-    
-    container.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(100px)';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-
-// ========================================
-// MODAL DIŞI TIKLAMALAR
+// MODAL DIŞ TIKLAMALAR & KLAVYE
 // ========================================
 
 document.addEventListener('click', (e) => {
@@ -1312,12 +1379,19 @@ document.addEventListener('keydown', (e) => {
 // LIVE PREVIEW
 // ========================================
 
-document.getElementById('logoUrl')?.addEventListener('input', () => {
-    updatePreview('logoUrl', 'logoPreview', 'logoPreviewImg');
-});
-
-document.getElementById('bannerUrl')?.addEventListener('input', () => {
-    updatePreview('bannerUrl', 'bannerPreview', 'bannerPreviewImg');
+document.addEventListener('DOMContentLoaded', () => {
+    const logoInput = document.getElementById('logoUrl');
+    if (logoInput) {
+        logoInput.addEventListener('input', () => updatePreview('logoUrl', 'logoPreview', 'logoPreviewImg'));
+    }
+    
+    const bannerInput = document.getElementById('bannerUrl');
+    if (bannerInput) {
+        bannerInput.addEventListener('input', () => updatePreview('bannerUrl', 'bannerPreview', 'bannerPreviewImg'));
+    }
+    
+    // İlk embed preview
+    setTimeout(updateEmbedPreview, 500);
 });
 
 
