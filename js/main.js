@@ -1,5 +1,5 @@
 // ========================================
-// MAIN.JS - WOWSY BOT WEBSITE
+// MAIN.JS - WOWSY BOT WEBSITE (Firestore)
 // ========================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -41,19 +41,19 @@ function initNavbar() {
     });
 }
 
-// ===== LOAD HOMEPAGE DATA FROM FIREBASE =====
+// ===== LOAD HOMEPAGE DATA (FIRESTORE) =====
 function loadHomepageData() {
-    console.log('📄 Ana sayfa verileri yükleniyor...');
+    console.log('📄 Ana sayfa verileri yükleniyor (Firestore)...');
     
-    homepageRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        
-        if (!data) {
-            console.log('⚠️ Firebase\'de homepage verisi yok');
+    // Gerçek zamanlı dinleme
+    homepageRef.onSnapshot((doc) => {
+        if (!doc.exists) {
+            console.log('⚠️ Homepage verisi yok');
             return;
         }
         
-        console.log('✅ Homepage verileri yüklendi:', data);
+        const data = doc.data();
+        console.log('✅ Homepage yüklendi:', data);
         
         // Bot Name
         if (data.botName) {
@@ -61,7 +61,7 @@ function loadHomepageData() {
             document.getElementById('footer-bot-name').textContent = data.botName;
         }
         
-        // Logo URL
+        // Logo
         if (data.logoUrl) {
             document.getElementById('nav-logo-img').src = data.logoUrl;
             document.getElementById('hero-bot-avatar').src = data.logoUrl;
@@ -74,55 +74,54 @@ function loadHomepageData() {
             document.getElementById('invite-btn-hero').href = data.inviteLink;
         }
         
-        // Hero Title
+        // Hero Text
         if (data.heroTitle) {
             document.getElementById('hero-title-text').textContent = data.heroTitle;
         }
         
-        // Hero Highlight
         if (data.heroHighlight) {
             document.getElementById('hero-title-highlight').textContent = data.heroHighlight;
         }
         
-        // Hero Description
         if (data.heroDescription) {
             document.getElementById('hero-description').textContent = data.heroDescription;
         }
         
-        // Badge Text
         if (data.badgeText) {
             const badgeSpan = document.querySelector('#hero-badge span');
-            if (badgeSpan) {
-                badgeSpan.textContent = data.badgeText;
-            }
+            if (badgeSpan) badgeSpan.textContent = data.badgeText;
         }
     }, (error) => {
-        console.error('❌ Homepage yükleme hatası:', error);
+        console.error('❌ Homepage hatası:', error);
     });
 }
 
-// ===== LOAD COMMANDS FROM FIREBASE =====
+// ===== LOAD COMMANDS (FIRESTORE) =====
 function loadCommands() {
-    console.log('🎮 Komutlar yükleniyor...');
+    console.log('🎮 Komutlar yükleniyor (Firestore)...');
     
-    commandsRef.on('value', (snapshot) => {
+    // Gerçek zamanlı dinleme
+    commandsRef.onSnapshot((snapshot) => {
         const tabsContainer = document.getElementById('command-tabs');
         const gridContainer = document.getElementById('commands-grid');
         
         tabsContainer.innerHTML = '';
         gridContainer.innerHTML = '';
         
-        const categories = snapshot.val();
-        
-        if (!categories) {
-            console.log('⚠️ Firebase\'de komut verisi yok');
+        if (snapshot.empty) {
+            console.log('⚠️ Komut yok');
             gridContainer.innerHTML = '<p style="text-align:center; color: var(--text-muted); padding: 40px;">Henüz komut eklenmemiş.</p>';
             return;
         }
         
+        const categories = {};
+        snapshot.forEach(doc => {
+            categories[doc.id] = doc.data();
+        });
+        
         console.log('✅ Komutlar yüklendi:', Object.keys(categories).length, 'kategori');
         
-        // Sort categories by order
+        // Kategorileri sırala
         const sortedCategories = Object.entries(categories).sort((a, b) => {
             return (a[1].order || 0) - (b[1].order || 0);
         });
@@ -131,7 +130,7 @@ function loadCommands() {
         let allCommands = {};
         
         sortedCategories.forEach(([catKey, category]) => {
-            // Create tab
+            // Tab oluştur
             const tab = document.createElement('button');
             tab.className = `command-tab ${firstCategory ? 'active' : ''}`;
             tab.dataset.category = catKey;
@@ -142,40 +141,32 @@ function loadCommands() {
             tab.addEventListener('click', () => switchCommandTab(catKey));
             tabsContainer.appendChild(tab);
             
-            // Store commands
+            // Komutları sakla
             if (category.commands) {
-                allCommands[catKey] = {
-                    ...category,
-                    commands: category.commands
-                };
+                allCommands[catKey] = category;
             }
             
             firstCategory = false;
         });
         
-        // Render first category
+        // İlk kategoriyi göster
         if (sortedCategories.length > 0) {
             renderCommands(sortedCategories[0][0], allCommands);
         }
         
-        // Store globally
         window._allCommands = allCommands;
         
     }, (error) => {
-        console.error('❌ Komut yükleme hatası:', error);
+        console.error('❌ Komut hatası:', error);
     });
 }
 
 // ===== SWITCH COMMAND TAB =====
 function switchCommandTab(categoryKey) {
-    // Update active tab
     document.querySelectorAll('.command-tab').forEach(t => t.classList.remove('active'));
     const activeTab = document.querySelector(`.command-tab[data-category="${categoryKey}"]`);
-    if (activeTab) {
-        activeTab.classList.add('active');
-    }
+    if (activeTab) activeTab.classList.add('active');
     
-    // Render commands
     renderCommands(categoryKey, window._allCommands);
 }
 
@@ -229,7 +220,6 @@ function initModal() {
         }
     });
     
-    // ESC key to close
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.classList.contains('active')) {
             modal.classList.remove('active');
@@ -254,45 +244,47 @@ function openCommandModal(cmd, category) {
     modal.classList.add('active');
 }
 
-// ===== LOAD STATS FROM FIREBASE =====
+// ===== LOAD STATS (FIRESTORE) =====
 function loadStats() {
-    console.log('📊 İstatistikler yükleniyor...');
+    console.log('📊 İstatistikler yükleniyor (Firestore)...');
     
-    statsRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        
-        if (!data) {
-            console.log('⚠️ Firebase\'de stats verisi yok');
+    // Gerçek zamanlı dinleme
+    statsRef.onSnapshot((doc) => {
+        if (!doc.exists) {
+            console.log('⚠️ Stats verisi yok');
             return;
         }
         
-        console.log('✅ İstatistikler yüklendi:', data);
+        const data = doc.data();
+        console.log('✅ Stats yüklendi:', data);
         
         // Hero stats
-        animateNumber('stat-servers', data.totalServers || 0);
-        animateNumber('stat-users', data.totalUsers || 0);
+        animateNumber('stat-servers', data.server_count || 0);
+        animateNumber('stat-users', data.user_count || 0);
         
         // Stats grid
         const statsGrid = document.getElementById('stats-grid');
+        if (!statsGrid) return;
+        
         statsGrid.innerHTML = '';
         
         const statsData = [
             { 
                 icon: 'fa-server', 
                 label: 'Sunucu', 
-                value: data.totalServers || 0, 
+                value: data.server_count || 0, 
                 color: '#57F287' 
             },
             { 
                 icon: 'fa-users', 
                 label: 'Kullanıcı', 
-                value: data.totalUsers || 0, 
+                value: data.user_count || 0, 
                 color: '#5865F2' 
             },
             { 
                 icon: 'fa-terminal', 
                 label: 'Komut Kullanımı', 
-                value: data.totalCommandsUsed || 0, 
+                value: data.total_commands || 0, 
                 color: '#FEE75C' 
             },
             { 
@@ -316,9 +308,8 @@ function loadStats() {
             `;
             statsGrid.appendChild(card);
         });
-        
     }, (error) => {
-        console.error('❌ Stats yükleme hatası:', error);
+        console.error('❌ Stats hatası:', error);
     });
 }
 
@@ -362,4 +353,4 @@ function animateNumber(elementId, target) {
     }, 16);
 }
 
-console.log('✅ main.js yüklendi!');
+console.log('✅ main.js (Firestore) hazır!');
