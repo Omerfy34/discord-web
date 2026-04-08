@@ -19,16 +19,16 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 
 // ========================================
-// COLLECTION REFERANSLARI (admin.js ile uyumlu)
+// COLLECTION REFERANSLARI
 // ========================================
 
-// Ana sayfa ayarları
+// Ana sayfa ayarları - SENİN YAPINDA "homepage/settings"
 const homepageRef = db.collection('homepage').doc('settings');
 
 // Komutlar koleksiyonu
 const commandsRef = db.collection('commands');
 
-// Bot istatistikleri
+// Bot istatistikleri - SENİN YAPINDA "bot_stats/general"
 const statsRef = db.collection('bot_stats').doc('general');
 
 console.log('🔥 Firebase (Firestore) bağlantısı kuruldu!');
