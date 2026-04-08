@@ -239,344 +239,6 @@
             height: 28px;
             font-size: 12px;
         }
-        
-        /* ==================== YENİ STATS STİLLERİ ==================== */
-        .stats-grid-main {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        @media (max-width: 1200px) {
-            .stats-grid-main {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        @media (max-width: 600px) {
-            .stats-grid-main {
-                grid-template-columns: 1fr;
-            }
-        }
-        .stat-card-big {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 25px;
-            text-align: center;
-            transition: all 0.3s;
-        }
-        .stat-card-big:hover {
-            transform: translateY(-5px);
-            border-color: var(--blurple);
-        }
-        .stat-card-big .stat-icon-big {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin: 0 auto 15px;
-        }
-        .stat-card-big .stat-value-big {
-            font-size: 32px;
-            font-weight: 800;
-            display: block;
-            margin-bottom: 5px;
-        }
-        .stat-card-big .stat-label-big {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-        
-        /* Section Cards */
-        .stats-section {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-        .stats-section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .stats-section-title {
-            font-size: 18px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .stats-section-title i {
-            color: var(--blurple);
-        }
-        
-        /* Server List */
-        .server-list {
-            display: grid;
-            gap: 10px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .server-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-        .server-item:hover {
-            border-color: var(--blurple);
-        }
-        .server-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            object-fit: cover;
-            background: var(--blurple);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 18px;
-        }
-        .server-info {
-            flex: 1;
-        }
-        .server-name {
-            font-weight: 600;
-            font-size: 15px;
-            margin-bottom: 3px;
-        }
-        .server-members {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-        .server-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .server-badge.boost {
-            background: rgba(244, 127, 255, 0.2);
-            color: #F47FFF;
-        }
-        
-        /* Leaderboard */
-        .leaderboard-list {
-            display: grid;
-            gap: 8px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .leaderboard-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 15px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-        }
-        .leaderboard-item.top-1 {
-            border-color: #FFD700;
-            background: rgba(255, 215, 0, 0.1);
-        }
-        .leaderboard-item.top-2 {
-            border-color: #C0C0C0;
-            background: rgba(192, 192, 192, 0.1);
-        }
-        .leaderboard-item.top-3 {
-            border-color: #CD7F32;
-            background: rgba(205, 127, 50, 0.1);
-        }
-        .leaderboard-rank {
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-            background: var(--bg-tertiary);
-        }
-        .leaderboard-item.top-1 .leaderboard-rank {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            color: #1a1a1a;
-        }
-        .leaderboard-item.top-2 .leaderboard-rank {
-            background: linear-gradient(135deg, #C0C0C0, #A9A9A9);
-            color: #1a1a1a;
-        }
-        .leaderboard-item.top-3 .leaderboard-rank {
-            background: linear-gradient(135deg, #CD7F32, #8B4513);
-            color: white;
-        }
-        .leaderboard-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .leaderboard-info {
-            flex: 1;
-        }
-        .leaderboard-name {
-            font-weight: 600;
-            font-size: 14px;
-        }
-        .leaderboard-balance {
-            font-weight: 700;
-            color: #F1C40F;
-            font-size: 14px;
-        }
-        
-        /* Music Sessions */
-        .music-list {
-            display: grid;
-            gap: 10px;
-        }
-        .music-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-        }
-        .music-item.playing {
-            border-color: #57F287;
-        }
-        .music-status {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        .music-status.playing {
-            background: rgba(87, 242, 135, 0.2);
-            color: #57F287;
-            animation: pulse 1.5s infinite;
-        }
-        .music-status.paused {
-            background: rgba(254, 231, 92, 0.2);
-            color: #FEE75C;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .music-info {
-            flex: 1;
-        }
-        .music-server {
-            font-weight: 600;
-            font-size: 14px;
-        }
-        .music-channel {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        .music-listeners {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-        
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-        }
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-        
-        /* Tabs */
-        .stats-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .stats-tab {
-            padding: 10px 20px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        .stats-tab:hover {
-            border-color: var(--blurple);
-            color: var(--text-primary);
-        }
-        .stats-tab.active {
-            background: var(--blurple);
-            border-color: var(--blurple);
-            color: white;
-        }
-        .stats-tab-content {
-            display: none;
-        }
-        .stats-tab-content.active {
-            display: block;
-        }
-        
-        /* Economy Summary */
-        .economy-summary {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        @media (max-width: 768px) {
-            .economy-summary {
-                grid-template-columns: 1fr;
-            }
-        }
-        .economy-stat {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-        }
-        .economy-stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #F1C40F;
-            display: block;
-        }
-        .economy-stat-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 5px;
-        }
     </style>
 </head>
 <body class="admin-body">
@@ -612,35 +274,83 @@
     <div class="admin-dashboard" id="adminDashboard" style="display: none;">
         
         <!-- Sidebar -->
-        <aside class="admin-sidebar">
-            <div class="sidebar-header">
-                <img id="sidebar-logo" src="assets/images/logo.png" alt="Logo">
-                <span>Admin Panel</span>
+<aside class="admin-sidebar">
+    <div class="sidebar-header">
+        <img id="sidebar-logo" src="assets/images/logo.png" alt="Logo">
+        <span>Admin Panel</span>
+    </div>
+    <nav class="sidebar-nav">
+        <!-- Ana Bölüm -->
+        <div class="sidebar-section">
+            <span class="sidebar-section-title">📊 Genel</span>
+        </div>
+        <a href="#" class="sidebar-link active" data-panel="homepage">
+            <i class="fas fa-home"></i>
+            <span>Ana Sayfa</span>
+        </a>
+        <a href="#" class="sidebar-link" data-panel="stats">
+            <i class="fas fa-chart-bar"></i>
+            <span>İstatistikler</span>
+        </a>
+        
+        <!-- Yönetim Bölümü -->
+        <div class="sidebar-section">
+            <span class="sidebar-section-title">⚙️ Yönetim</span>
+        </div>
+        <a href="#" class="sidebar-link" data-panel="servers">
+            <i class="fas fa-server"></i>
+            <span>Sunucu Yönetimi</span>
+        </a>
+        <a href="#" class="sidebar-link" data-panel="economy">
+            <i class="fas fa-coins"></i>
+            <span>Ekonomi</span>
+        </a>
+        <a href="#" class="sidebar-link" data-panel="commands">
+            <i class="fas fa-terminal"></i>
+            <span>Komutlar</span>
+        </a>
+        
+        <!-- İletişim Bölümü -->
+        <div class="sidebar-section">
+            <span class="sidebar-section-title">📢 İletişim</span>
+        </div>
+        <a href="#" class="sidebar-link" data-panel="messaging">
+            <i class="fas fa-paper-plane"></i>
+            <span>Mesajlaşma</span>
+        </a>
+        
+        <!-- Araçlar Bölümü -->
+        <div class="sidebar-section">
+            <span class="sidebar-section-title">🛠️ Araçlar</span>
+        </div>
+        <a href="#" class="sidebar-link" data-panel="tools">
+            <i class="fas fa-tools"></i>
+            <span>Bot Araçları</span>
+        </a>
+        <a href="#" class="sidebar-link" data-panel="logs">
+            <i class="fas fa-history"></i>
+            <span>Log Kayıtları</span>
+        </a>
+        
+    </nav>
+    <div class="sidebar-footer">
+        <div class="admin-user-info">
+            <div class="admin-avatar">
+                <i class="fas fa-user-shield"></i>
             </div>
-            <nav class="sidebar-nav">
-                <a href="#" class="sidebar-link active" data-panel="homepage">
-                    <i class="fas fa-home"></i>
-                    <span>Ana Sayfa</span>
-                </a>
-                <a href="#" class="sidebar-link" data-panel="commands">
-                    <i class="fas fa-terminal"></i>
-                    <span>Komutlar</span>
-                </a>
-                <a href="#" class="sidebar-link" data-panel="stats">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>İstatistikler</span>
-                </a>
-            </nav>
-            <div class="sidebar-footer">
-                <a href="index.html" class="btn btn-ghost btn-block" style="margin-bottom: 10px;">
-                    <i class="fas fa-external-link-alt"></i> Siteyi Görüntüle
-                </a>
-                <button class="btn btn-ghost btn-block" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i> Çıkış Yap
-                </button>
+            <div class="admin-details">
+                <span class="admin-name">Admin</span>
+                <span class="admin-role">Bot Sahibi</span>
             </div>
-        </aside>
-
+        </div>
+        <a href="index.html" class="btn btn-ghost btn-block" style="margin-bottom: 10px;">
+            <i class="fas fa-external-link-alt"></i> Siteyi Görüntüle
+        </a>
+        <button class="btn btn-ghost btn-block" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+        </button>
+    </div>
+</aside>
         <!-- Main Content -->
         <main class="admin-main">
             
@@ -750,7 +460,7 @@
                             <!-- Badge Text -->
                             <div class="setting-card">
                                 <label>🏷️ Rozet Metni (Badge)</label>
-                                <input type="text" id="badgeText" class="admin-input" placeholder="⚡ 100+ Komut | v1.0 Yayında!">
+                                <input type="text" id="badgeText" class="admin-input" placeholder="⚡ 150+ Komut | v2.0 Yayında!">
                                 <p class="setting-description">
                                     📍 <strong>Nerede görünür:</strong> Hero'nun en üstünde küçük etiket
                                     <br>📝 <strong>Örnek:</strong> "⚡ Yeni özellikler eklendi!"
@@ -789,169 +499,330 @@
                     </div>
                 </div>
 
-                <!-- ==================== STATS PANEL (YENİ) ==================== -->
+                <!-- ==================== STATS PANEL ==================== -->
                 <div class="panel" id="stats">
-                    
-                    <!-- Ana İstatistikler -->
-                    <div class="stats-grid-main">
-                        <div class="stat-card-big">
-                            <div class="stat-icon-big" style="background: rgba(87, 242, 135, 0.2); color: #57F287;">
-                                <i class="fas fa-server"></i>
-                            </div>
-                            <span class="stat-value-big" id="statServers">0</span>
-                            <span class="stat-label-big">Sunucu</span>
+                    <div class="section-card">
+                        <h2><i class="fas fa-chart-bar"></i> Bot İstatistikleri (Canlı)</h2>
+                        
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i>
+                            Bu veriler <strong>Discord botundan</strong> Firebase'e gönderiliyor.
+                            Bot çalışırken veriler otomatik güncellenir.
                         </div>
-                        <div class="stat-card-big">
-                            <div class="stat-icon-big" style="background: rgba(88, 101, 242, 0.2); color: #5865F2;">
-                                <i class="fas fa-users"></i>
+                        
+                        <div class="stats-dashboard" id="statsDisplay">
+                            <div class="stat-card-admin">
+                                <div class="stat-icon" style="background: rgba(87, 242, 135, 0.2); color: #57F287;">
+                                    <i class="fas fa-server"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="adminTotalServers">0</span>
+                                    <span class="stat-label">Toplam Sunucu</span>
+                                </div>
                             </div>
-                            <span class="stat-value-big" id="statUsers">0</span>
-                            <span class="stat-label-big">Kullanıcı</span>
-                        </div>
-                        <div class="stat-card-big">
-                            <div class="stat-icon-big" style="background: rgba(254, 231, 92, 0.2); color: #FEE75C;">
-                                <i class="fas fa-terminal"></i>
+                            <div class="stat-card-admin">
+                                <div class="stat-icon" style="background: rgba(88, 101, 242, 0.2); color: #5865F2;">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="adminTotalUsers">0</span>
+                                    <span class="stat-label">Toplam Kullanıcı</span>
+                                </div>
                             </div>
-                            <span class="stat-value-big" id="statCommands">0</span>
-                            <span class="stat-label-big">Komut</span>
-                        </div>
-                        <div class="stat-card-big">
-                            <div class="stat-icon-big" style="background: rgba(235, 69, 158, 0.2); color: #EB459E;">
-                                <i class="fas fa-clock"></i>
+                            <div class="stat-card-admin">
+                                <div class="stat-icon" style="background: rgba(254, 231, 92, 0.2); color: #FEE75C;">
+                                    <i class="fas fa-music"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="adminActivePlayers">0</span>
+                                    <span class="stat-label">Aktif Müzik</span>
+                                </div>
                             </div>
-                            <span class="stat-value-big" id="statUptime">-</span>
-                            <span class="stat-label-big">Çalışma Süresi</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Ek İstatistikler -->
-                    <div class="stats-grid-main" style="margin-bottom: 30px;">
-                        <div class="stat-card-big">
-                            <div class="stat-icon-big" style="background: rgba(237, 66, 69, 0.2); color: #ED4245;">
-                                <i class="fas fa-music"></i>
-                            </div>
-                            <span class="stat-value-big" id="statVoice">0</span>
-                            <span class="stat-label-big">Ses Bağlantısı</span>
-                        </div>
-                        <div class="stat-card-big">
-                            <div class="stat-icon-big" style="background: rgba(34, 197, 94, 0.2); color: #22C55E;">
-                                <i class="fas fa-signal"></i>
-                            </div>
-                            <span class="stat-value-big" id="statPing">-</span>
-                            <span class="stat-label-big">Ping</span>
-                        </div>
-                        <div class="stat-card-big">
-                            <div class="stat-icon-big" style="background: rgba(241, 196, 15, 0.2); color: #F1C40F;">
-                                <i class="fas fa-coins"></i>
-                            </div>
-                            <span class="stat-value-big" id="statTotalEconomy">0</span>
-                            <span class="stat-label-big">Toplam Para</span>
-                        </div>
-                        <div class="stat-card-big">
-                            <div class="stat-icon-big" style="background: rgba(155, 89, 182, 0.2); color: #9B59B6;">
-                                <i class="fas fa-headphones"></i>
-                            </div>
-                            <span class="stat-value-big" id="statListeners">0</span>
-                            <span class="stat-label-big">Dinleyici</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Tab Navigasyonu -->
-                    <div class="stats-tabs">
-                        <button class="stats-tab active" data-tab="servers">
-                            <i class="fas fa-server"></i> Sunucular
-                        </button>
-                        <button class="stats-tab" data-tab="economy">
-                            <i class="fas fa-coins"></i> Ekonomi Liderboard
-                        </button>
-                        <button class="stats-tab" data-tab="music">
-                            <i class="fas fa-music"></i> Müzik Oturumları
-                        </button>
-                    </div>
-                    
-                    <!-- Sunucular Tab -->
-                    <div class="stats-tab-content active" id="tab-servers">
-                        <div class="stats-section">
-                            <div class="stats-section-header">
-                                <h3 class="stats-section-title">
-                                    <i class="fas fa-server"></i> Sunucu Listesi
-                                </h3>
-                                <span id="serverCount" style="color: var(--text-muted); font-size: 14px;">0 sunucu</span>
-                            </div>
-                            <div class="server-list" id="serverList">
-                                <div class="empty-state">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                    <p>Yükleniyor...</p>
+                            <div class="stat-card-admin">
+                                <div class="stat-icon" style="background: rgba(235, 69, 158, 0.2); color: #EB459E;">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span class="stat-value" id="adminUptime">0s</span>
+                                    <span class="stat-label">Çalışma Süresi</span>
                                 </div>
                             </div>
                         </div>
+                        
+                        <p style="text-align: center; color: var(--text-muted); margin-top: 20px; font-size: 13px;">
+                            📡 Son güncelleme: <span id="lastUpdate">-</span>
+                        </p>
                     </div>
-                    
-                    <!-- Ekonomi Tab -->
-                    <div class="stats-tab-content" id="tab-economy">
-                        <div class="stats-section">
-                            <div class="stats-section-header">
-                                <h3 class="stats-section-title">
-                                    <i class="fas fa-trophy"></i> En Zenginler
-                                </h3>
-                                <span id="economyUserCount" style="color: var(--text-muted); font-size: 14px;">0 kullanıcı</span>
-                            </div>
-                            
-                            <!-- Ekonomi Özeti -->
-                            <div class="economy-summary">
-                                <div class="economy-stat">
-                                    <span class="economy-stat-value" id="economyTotalMoney">0</span>
-                                    <span class="economy-stat-label">💰 Toplam Para</span>
-                                </div>
-                                <div class="economy-stat">
-                                    <span class="economy-stat-value" id="economyTotalCash">0</span>
-                                    <span class="economy-stat-label">💵 Toplam Nakit</span>
-                                </div>
-                                <div class="economy-stat">
-                                    <span class="economy-stat-value" id="economyTotalBank">0</span>
-                                    <span class="economy-stat-label">🏦 Toplam Banka</span>
-                                </div>
-                            </div>
-                            
-                            <div class="leaderboard-list" id="leaderboardList">
-                                <div class="empty-state">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                    <p>Yükleniyor...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Müzik Tab -->
-                    <div class="stats-tab-content" id="tab-music">
-                        <div class="stats-section">
-                            <div class="stats-section-header">
-                                <h3 class="stats-section-title">
-                                    <i class="fas fa-headphones"></i> Aktif Müzik Oturumları
-                                </h3>
-                                <span id="musicActiveCount" style="color: var(--text-muted); font-size: 14px;">0 aktif</span>
-                            </div>
-                            <div class="music-list" id="musicList">
-                                <div class="empty-state">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                    <p>Yükleniyor...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Son Güncelleme -->
-                    <p style="text-align: center; color: var(--text-muted); margin-top: 20px; font-size: 13px;">
-                        📡 Son güncelleme: <span id="lastUpdate">-</span>
-                    </p>
-                    
                 </div>
 
             </div>
         </main>
     </div>
 
-    <!-- ==================== CATEGORY MODAL ==================== -->
+<!-- ==================== SERVER MANAGEMENT PANEL ==================== -->
+<div class="panel" id="servers">
+    <div class="section-card">
+        <h2><i class="fas fa-server"></i> Sunucu Yönetimi</h2>
+        
+        <div class="help-text">
+            <i class="fas fa-info-circle"></i>
+            Botun bulunduğu tüm sunucuları görüntüle, ara ve yönet.
+        </div>
+
+        <!-- Arama ve Filtre -->
+        <div class="server-controls" style="margin-bottom: 20px; display: flex; gap: 15px;">
+            <input type="text" id="serverSearchInput" class="admin-input" placeholder="🔍 Sunucu ara..." style="flex: 1;">
+            <select id="serverSortSelect" class="admin-input" style="width: 200px;">
+                <option value="members">Üye Sayısı</option>
+                <option value="name">İsim (A-Z)</option>
+                <option value="joinDate">Katılım Tarihi</option>
+            </select>
+        </div>
+
+        <!-- Sunucu Listesi -->
+        <div id="serversList" class="servers-grid">
+            <p style="text-align: center; color: var(--text-muted); padding: 40px;">
+                <i class="fas fa-spinner fa-spin"></i> Sunucular yükleniyor...
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== ECONOMY PANEL ==================== -->
+<div class="panel" id="economy">
+    <div class="section-card">
+        <h2><i class="fas fa-coins"></i> Ekonomi Yönetimi</h2>
+        
+        <div class="help-text">
+            <i class="fas fa-info-circle"></i>
+            Kullanıcı bakiyelerini yönet, toplu işlemler yap ve ekonomi istatistiklerini gör.
+        </div>
+
+        <!-- Ekonomi Stats -->
+        <div class="stats-dashboard" style="margin-bottom: 30px;">
+            <div class="stat-card-admin">
+                <div class="stat-icon" style="background: rgba(254, 231, 92, 0.2); color: #FEE75C;">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="totalMoney">0</span>
+                    <span class="stat-label">Toplam Para</span>
+                </div>
+            </div>
+            <div class="stat-card-admin">
+                <div class="stat-icon" style="background: rgba(87, 242, 135, 0.2); color: #57F287;">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="activeEconomyUsers">0</span>
+                    <span class="stat-label">Aktif Kullanıcı</span>
+                </div>
+            </div>
+            <div class="stat-card-admin">
+                <div class="stat-icon" style="background: rgba(88, 101, 242, 0.2); color: #5865F2;">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value" id="currentInterest">2.5%</span>
+                    <span class="stat-label">Faiz Oranı</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hızlı İşlemler -->
+        <div class="quick-actions" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 30px;">
+            <div class="action-card" onclick="showEconomyModal('add')">
+                <i class="fas fa-plus-circle" style="color: #57F287;"></i>
+                <span>Para Ekle</span>
+            </div>
+            <div class="action-card" onclick="showEconomyModal('remove')">
+                <i class="fas fa-minus-circle" style="color: #ED4245;"></i>
+                <span>Para Sil</span>
+            </div>
+            <div class="action-card" onclick="showEconomyModal('reset')">
+                <i class="fas fa-redo" style="color: #FEE75C;"></i>
+                <span>Kullanıcı Sıfırla</span>
+            </div>
+            <div class="action-card" onclick="showInterestModal()">
+                <i class="fas fa-percentage" style="color: #5865F2;"></i>
+                <span>Faiz Ayarla</span>
+            </div>
+        </div>
+
+        <!-- En Zengin Kullanıcılar -->
+        <h3 style="margin-bottom: 15px;"><i class="fas fa-trophy"></i> En Zengin Kullanıcılar</h3>
+        <div id="richestUsers" class="leaderboard-list">
+            <p style="text-align: center; color: var(--text-muted); padding: 20px;">Yükleniyor...</p>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MESSAGING PANEL ==================== -->
+<div class="panel" id="messaging">
+    <div class="section-card">
+        <h2><i class="fas fa-paper-plane"></i> Mesajlaşma & Duyurular</h2>
+        
+        <div class="help-text">
+            <i class="fas fa-exclamation-triangle" style="color: #FEE75C;"></i>
+            <strong>DİKKAT:</strong> Toplu mesajlar Discord'un rate limitine takılabilir. Dikkatli kullan!
+        </div>
+
+        <!-- Mesaj Türü Seçimi -->
+        <div class="message-type-selector" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;">
+            <div class="message-type-card active" data-type="announcement" onclick="selectMessageType('announcement')">
+                <i class="fas fa-bullhorn"></i>
+                <span>Tüm Sunuculara Duyuru</span>
+            </div>
+            <div class="message-type-card" data-type="dm" onclick="selectMessageType('dm')">
+                <i class="fas fa-envelope"></i>
+                <span>Kullanıcıya DM</span>
+            </div>
+            <div class="message-type-card" data-type="server" onclick="selectMessageType('server')">
+                <i class="fas fa-server"></i>
+                <span>Belirli Sunucuya</span>
+            </div>
+        </div>
+
+        <!-- Mesaj Formu -->
+        <div id="messageForm">
+            <!-- Hedef Seçimi (DM/Server için) -->
+            <div id="targetSelector" style="display: none; margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 10px; color: var(--text-secondary);">
+                    <i class="fas fa-crosshairs"></i> Hedef Seç
+                </label>
+                <input type="text" id="targetId" class="admin-input" placeholder="Kullanıcı ID veya Sunucu ID">
+            </div>
+
+            <!-- Embed Oluşturucu -->
+            <div class="embed-builder">
+                <h3><i class="fas fa-palette"></i> Mesaj Tasarımı</h3>
+                
+                <div class="form-group">
+                    <label>📌 Başlık</label>
+                    <input type="text" id="embedTitle" class="admin-input" placeholder="Duyuru Başlığı">
+                </div>
+
+                <div class="form-group">
+                    <label>📝 Açıklama</label>
+                    <textarea id="embedDescription" class="admin-input admin-textarea" rows="5" placeholder="Mesaj içeriği..."></textarea>
+                </div>
+
+                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label>🎨 Renk</label>
+                        <input type="color" id="embedColor" value="#5865F2" style="width: 100%; height: 50px; border-radius: 8px;">
+                    </div>
+                    <div>
+                        <label>🖼️ Thumbnail URL</label>
+                        <input type="text" id="embedThumbnail" class="admin-input" placeholder="https://...">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>🔗 Footer</label>
+                    <input type="text" id="embedFooter" class="admin-input" placeholder="WOWSY Bot • 2024">
+                </div>
+
+                <!-- Önizleme -->
+                <div class="embed-preview" id="embedPreview" style="margin-top: 20px;">
+                    <!-- Dinamik olarak doldurulacak -->
+                </div>
+
+                <button class="btn btn-primary btn-lg" style="width: 100%; margin-top: 20px;" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i> Mesajı Gönder
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== TOOLS PANEL ==================== -->
+<div class="panel" id="tools">
+    <div class="section-card">
+        <h2><i class="fas fa-tools"></i> Bot Araçları</h2>
+        
+        <div class="tools-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            
+            <!-- Durum Değiştir -->
+            <div class="tool-card">
+                <h3><i class="fas fa-signal"></i> Bot Durumu</h3>
+                <select id="botStatusType" class="admin-input" style="margin-bottom: 10px;">
+                    <option value="online">🟢 Çevrimiçi</option>
+                    <option value="idle">🟡 Boşta</option>
+                    <option value="dnd">🔴 Rahatsız Etmeyin</option>
+                    <option value="invisible">⚫ Görünmez</option>
+                </select>
+                <input type="text" id="botStatusText" class="admin-input" placeholder="Durum mesajı..." style="margin-bottom: 10px;">
+                <select id="botActivityType" class="admin-input" style="margin-bottom: 10px;">
+                    <option value="PLAYING">Oynuyor</option>
+                    <option value="WATCHING">İzliyor</option>
+                    <option value="LISTENING">Dinliyor</option>
+                    <option value="COMPETING">Yarışıyor</option>
+                </select>
+                <button class="btn btn-primary" onclick="updateBotStatus()">
+                    <i class="fas fa-save"></i> Durumu Güncelle
+                </button>
+            </div>
+
+            <!-- Patron Modu -->
+            <div class="tool-card">
+                <h3><i class="fas fa-crown"></i> Patron Modu</h3>
+                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">
+                    Tüm komutlar sadece bot sahibine özel olur
+                </p>
+                <button class="btn btn-primary" id="patronModeBtn" onclick="togglePatronMode()">
+                    <i class="fas fa-toggle-off"></i> Patron Modunu Aç
+                </button>
+            </div>
+
+            <!-- Gizli Mod -->
+            <div class="tool-card">
+                <h3><i class="fas fa-user-secret"></i> Gizli Mod</h3>
+                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">
+                    Bot görünmez olur, sadece sahibi kullanabilir
+                </p>
+                <button class="btn btn-primary" id="stealthModeBtn" onclick="toggleStealthMode()">
+                    <i class="fas fa-toggle-off"></i> Gizli Modu Aç
+                </button>
+            </div>
+
+            <!-- Fake Mesaj -->
+            <div class="tool-card">
+                <h3><i class="fas fa-mask"></i> Fake Mesaj</h3>
+                <input type="text" id="fakeUserId" class="admin-input" placeholder="Kullanıcı ID" style="margin-bottom: 10px;">
+                <textarea id="fakeMessage" class="admin-input admin-textarea" rows="3" placeholder="Sahte mesaj..."></textarea>
+                <button class="btn btn-primary" onclick="sendFakeMessage()">
+                    <i class="fas fa-paper-plane"></i> Gönder
+                </button>
+            </div>
+
+            <!-- Günlük Rapor -->
+            <div class="tool-card">
+                <h3><i class="fas fa-file-alt"></i> Günlük Rapor</h3>
+                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">
+                    Son 24 saatin detaylı istatistikleri
+                </p>
+                <button class="btn btn-primary" onclick="generateDailyReport()">
+                    <i class="fas fa-download"></i> Rapor Oluştur
+                </button>
+            </div>
+
+            <!-- Aktif Kullanıcılar -->
+            <div class="tool-card">
+                <h3><i class="fas fa-users"></i> Aktif Kullanıcılar</h3>
+                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 15px;">
+                    Son 1 saatte aktif olan kullanıcılar
+                </p>
+                <button class="btn btn-primary" onclick="showActiveUsers()">
+                    <i class="fas fa-eye"></i> Kullanıcıları Göster
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    <!-- ==================== CATEGORY MODAL (Gelişmiş) ==================== -->
     <div class="modal-backdrop" id="categoryModal">
         <div class="modal-box">
             <h3 class="modal-title" id="categoryModalTitle"><i class="fas fa-folder-plus"></i> Yeni Kategori Ekle</h3>
@@ -989,7 +860,7 @@
         </div>
     </div>
 
-    <!-- ==================== COMMAND MODAL ==================== -->
+    <!-- ==================== COMMAND MODAL (Gelişmiş) ==================== -->
     <div class="modal-backdrop" id="commandModal">
         <div class="modal-box">
             <h3 class="modal-title" id="commandModalTitle"><i class="fas fa-terminal"></i> Komut Ekle</h3>
@@ -1053,10 +924,10 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Firebase SDK (FIRESTORE) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="js/firebase-config.js"></script>
     <script src="js/admin.js"></script>
 
