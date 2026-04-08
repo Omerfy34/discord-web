@@ -1,6 +1,5 @@
 // ========================================
 // FIREBASE CONFIGURATION - WOWSY BOT
-// TEK FIREBASE PROJESİ (discord-bot-7f29e)
 // ========================================
 
 const firebaseConfig = {
@@ -15,13 +14,21 @@ const firebaseConfig = {
 // Firebase'i başlat
 firebase.initializeApp(firebaseConfig);
 
-// Firestore (Realtime DB değil!)
+// Firestore & Auth
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Collection referansları
+// ========================================
+// COLLECTION REFERANSLARI (admin.js ile uyumlu)
+// ========================================
+
+// Ana sayfa ayarları
 const homepageRef = db.collection('homepage').doc('settings');
+
+// Komutlar koleksiyonu
 const commandsRef = db.collection('commands');
+
+// Bot istatistikleri
 const statsRef = db.collection('bot_stats').doc('general');
 
 console.log('🔥 Firebase (Firestore) bağlantısı kuruldu!');
